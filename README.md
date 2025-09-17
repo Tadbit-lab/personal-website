@@ -1,2 +1,2 @@
 # personal-website
-This my page showing my skills 
+This is my page showing my skills 
