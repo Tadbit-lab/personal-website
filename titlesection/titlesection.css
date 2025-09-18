@@ -1,0 +1,15 @@
+h1{
+    color:rgb(52, 59, 87)
+}
+#title {
+
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+}
+
+    button:hover{
+        background-color: rgba(32, 51, 29, 0.836);
+        cursor: pointer;
+        font-size: x-large;
+    }
