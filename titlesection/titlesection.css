@@ -11,5 +11,5 @@ h1{
     button:hover{
         background-color: rgba(32, 51, 29, 0.836);
         cursor: pointer;
-        font-size: x-large;
+        font-radius: 50px
     }
