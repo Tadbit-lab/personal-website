@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="./titlesection/titlesection.css">
+  <link rel="stylesheet" href="./aboutmesection/aboutmesection.css">
+  <link rel="stylesheet" href="./craps game/crapsgame.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Title Section -->
+  <div class="main-section" id="title">
+    <h1 class="header">🎲 Welcome to Craps Royale</h1>
+    <p>Roll the dice. Test your luck. Win big.</p>
+    <h2>💥 New tables opening soon</h2>
+    <button class="title-section-button" onclick="enterCasino()">Enter Casino</button>
+  </div>
+
+  <!-- About Section -->
+  <div class="misc-section" id="aboutme">
+    <div class="bio-container">
+      <h1>🎰 About Craps Royale</h1>
+      <p class="aboutme-section-bio">
+        Craps Royale is a fast-paced dice game where strategy meets chance. Whether you're betting on the pass line or going all-in on a hard eight, every roll brings excitement. Designed for both beginners and seasoned players, our tables offer a sleek experience with real-time action and bold visuals.
+        <br><br>
+        Learn the rules, master the odds, and join a community of high rollers. The dice are hot — are you ready to roll?
+      </p>
+      <div class="aboutme-gallery">
+        <img src="./images/craps-action1.jpg" alt="Craps table" />
+        <img src="./images/craps-action2.jpg" alt="Players cheering" />
+      </div>
+      <div class="aboutme-icons">
+        <i class="aboutme-icon fab fa-discord"></i>
+        <i class="aboutme-icon fab fa-twitter"></i>
+        <i class="aboutme-icon fab fa-youtube"></i>
+        <i class="aboutme-icon far fa-envelope"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Section -->
+  <div class="main-section" id="game">
+    <section id="main">
+      <!-- Registration Form -->
+      <div class="registration-section" id="registration">
+        <h2>🎟️ Enter the Casino</h2>
+        <p>Please enter your name to begin:</p>
+        <input type="text" id="playerName" placeholder="Your name..." />
+        <button class="roll-button" onclick="startGame()">Start Game</button>
+        <p id="error-message" class="error-message"></p>
+      </div>
+
+      <!-- Dice Game -->
+      <div class="dice-game-section" id="diceGame" style="display: none;">
+        <h2>🎲 Roll the Dice</h2>
+        <p>Welcome, <span id="displayName"></span>!</p>
+        <p id="playerStats" class="player-stats">Wins: 0 | Losses: 0</p>
+
+        <div class="betting-panel">
+          <p>💵 Balance: $<span id="balance">100</span></p>
+          <label for="betAmount">Place your bet:</label>
+          <input type="number" id="betAmount" min="1" max="100" value="10" />
+        </div>
+
+        <p>🎯 Current Point: <span id="playerPoint">-</span></p>
+
+        <div class="dice-container">
+          <div class="die" id="die1">🎲</div>
+          <div class="die" id="die2">🎲</div>
+        </div>
+        <button class="roll-button" onclick="rollDice()">Roll Dice</button>
+        <p class="score-display">Total: <span id="score">0</span></p>
+        <p id="gameMessage" class="game-message"></p>
+
+        <div class="action-buttons">
+          <button id="nextRound" class="roll-button" onclick="nextRound()" style="display:none;">Next Round</button>
+          <button id="exitGame" class="roll-button" onclick="exitGame()" style="display:none;">Exit Game</button>
+        </div>
+
+        <div class="leaderboard">
+          <h3>🏅 Leaderboard</h3>
+          <ul id="leaderboardList"></ul>
+        </div>
+
+        <button class="roll-button" onclick="showHistory()">📜 View Betting History</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Betting History Section -->
+  <div class="history-section" id="historySection" style="display: none;">
+    <h2>📜 Your Betting History</h2>
+    <ul id="betHistoryList"></ul>
+    <button class="roll-button" onclick="hideHistory()">⬅ Back to Game</button>
+  </div>
+
+  <!-- Sound Effects -->
+  <audio id="diceSound" src="./craps game/sounds/dice-roll.mp3" preload="auto"></audio>
+  <audio id="welcomeSound" src="./craps game/sounds/welcome.mp3" preload="auto"></audio>
+  <audio id="winSound" src="./craps game/sounds/win.mp3" preload="auto"></audio>
+  <audio id="loseSound" src="./craps game/sounds/lose.mp3" preload="auto"></audio>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Game Script -->
+  <script src="./craps game/crapsgame.js"></script>
+</body>
+</html>

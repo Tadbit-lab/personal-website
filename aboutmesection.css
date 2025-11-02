@@ -1,0 +1,58 @@
+:root {
+  --titleSectionPrimaryColor: #f5f5f5;
+  --titleSectionSecondaryColor: #ff3c3c;
+  --titleSectionTertiaryColor: #222;
+}
+
+#aboutme {
+  background-color: #000;
+  color: var(--titleSectionPrimaryColor);
+  padding: 100px 25px;
+  text-align: center;
+}
+
+.bio-container {
+  width: 65%;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 1.6;
+  font-family: 'Enriqueta', serif;
+}
+
+.aboutme-section-bio {
+  margin-bottom: 30px;
+}
+
+.aboutme-icons {
+  margin-top: 20px;
+}
+
+.aboutme-icon {
+  font-size: 24px;
+  margin: 0 10px;
+  color: var(--titleSectionSecondaryColor);
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.aboutme-icon:hover {
+  color: white;
+}
+
+@media screen and (max-width: 500px) {
+  .bio-container {
+    width: 100%;
+    padding: 0 10px;
+  }
+}
+
+.aboutme-gallery img {
+  width: 300px;
+  height: auto;
+  object-fit: cover;
+  background-color: #222;
+}
+
+body {
+    background-image: url(./images/elliott-colburn-vr_in5tvlVE-unsplash.jpg)
+}
