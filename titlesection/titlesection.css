@@ -1,4 +1,5 @@
 :root {
+<<<<<<< HEAD
   --titleSectionPrimaryColor: #f5f5f5;
   --titleSectionSecondaryColor: #ff3c3c;
   --titleSectionTertiaryColor: #222;
@@ -36,3 +37,36 @@
   text-transform: uppercase;
   letter-spacing: 3px;
 }
+=======
+     --titleSectionPrimaryColor: rgb(222, 216, 181);
+     --titleSectionSecondaryColor: rgba(157, 125, 189, 0.726);
+     --titleSectionTertiaryColor: rgba(19, 108, 144, 0.626);
+}
+
+
+#title {
+
+    text-align: center;
+    padding-top: 200px;
+ background-image: url('../images/elliott-colburn-vr_in5tvlVE-unsplash.jpg');
+ background-position: center top;   
+      color: var(--titleSectionPrimaryColor);
+    }
+     .title-section-button {
+        color: var(--titleSectionPrimaryColour)
+        border var(--titleSectionPrimaryColour) 1px;
+        border-radius: 12px;
+        padding: 15px 20px;
+        background-color: transparent;
+     }
+
+     .header{
+        margin-bottom: -5px;
+     }
+
+    .title-section-button:hover {
+          background-color: transparent;
+        cursor: pointer;
+    }
+
+>>>>>>> 14f99b5c30394c66a667885826b886a6497934da
