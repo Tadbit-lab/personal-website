@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Craps Royale</title>
+
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="./titlesection/titlesection.css">
   <link rel="stylesheet" href="./aboutmesection/aboutmesection.css">
   <link rel="stylesheet" href="./craps game/crapsgame.css">
+
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+
+  <!-- Preload -->
+  <link rel="preload" href="./craps game/sounds/dice-roll.mp3" as="audio">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" as="style">
 </head>
 <body>
+
   <!-- Title Section -->
   <div class="main-section" id="title">
     <h1 class="header">🎲 Welcome to Craps Royale</h1>
@@ -16,18 +28,41 @@
     <button class="title-section-button" onclick="enterCasino()">Enter Casino</button>
   </div>
 
+  <!-- About Section -->
+  <div class="main-section" id="aboutme">
+    <div class="bio-container">
+
+      <!-- Meet the Creator -->
+      <div class="aboutme-description">
+        <div class="aboutme-description-inner">
+          <div class="aboutme-text">
+            <h2>🧠 Meet the Creator</h2>
+            <p>
+              Hi, I'm <strong>Toniloba</strong> — the mind behind Craps Royale. I built this game to bring the thrill of the casino to your screen, with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
+            </p>
+          </div>
+          <div class="aboutme-avatar">
+            <img src="./images/creator-avatar.png" alt="Toniloba avatar" />
+          </div>
+        </div>
+      </div>
+
+   
+      <!-- Social Icons -->
       <div class="aboutme-icons">
         <i class="aboutme-icon fab fa-discord"></i>
         <i class="aboutme-icon fab fa-twitter"></i>
         <i class="aboutme-icon fab fa-youtube"></i>
         <i class="aboutme-icon far fa-envelope"></i>
       </div>
+
     </div>
   </div>
 
   <!-- Game Section -->
   <div class="main-section" id="game">
     <section id="main">
+
       <!-- Registration Form -->
       <div class="registration-section" id="registration">
         <h2>🎟️ Enter the Casino</h2>
@@ -55,6 +90,7 @@
           <div class="die" id="die1">🎲</div>
           <div class="die" id="die2">🎲</div>
         </div>
+
         <button class="roll-button" onclick="rollDice()">Roll Dice</button>
         <p class="score-display">Total: <span id="score">0</span></p>
         <p id="gameMessage" class="game-message"></p>
@@ -94,4 +130,4 @@
   <!-- Game Script -->
   <script src="./craps game/crapsgame.js"></script>
 </body>
-</html>
+</html>>
