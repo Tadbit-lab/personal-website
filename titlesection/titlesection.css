@@ -7,13 +7,29 @@
 /* 🎰 Title Section Styling */
 #title {
   text-align: center;
-  padding-top: 150px;
+  padding: 200px 40px; /* Increased top padding and added horizontal padding */
   background-image: url('../images/elliott-colburn-vr_in5tvlVE-unsplash.jpg');
   background-position: center;
   background-size: cover;
+  background-repeat: no-repeat;
   color: var(--titleSectionPrimaryColor);
 }
 
+/* Optional: Make the header text larger and bolder */
+#title .header {
+  font-size: 72px; /* Previously 60px */
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* Optional: Make subtitle text larger */
+#title h2 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-top: 10px;
+}
 /* 🎯 Call-to-Action Button */
 .title-section-button {
   color: var(--titleSectionPrimaryColor);
@@ -24,6 +40,7 @@
   font-size: 18px;
   font-family: 'Orbitron', sans-serif;
   transition: all 0.3s ease;
+
 }
 
 .title-section-button:hover {

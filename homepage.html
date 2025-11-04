@@ -28,49 +28,54 @@
     <button class="title-section-button" onclick="enterCasino()">Enter Casino</button>
   </div>
 
-  <!-- About Section -->
-  <div class="main-section" id="aboutme" style="
-    background-image: url('./images/casino-lights.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 100px 25px;
-    text-align: center;
+ <!-- About Section -->
+<div class="main-section" id="aboutme" style="
+  background-image: url('./images/casino-lights.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 100px 25px;
+  text-align: center;
+">
+  <div class="bio-container" style="
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 50px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
   ">
-    <div class="bio-container" style="
-      background-color: rgba(0, 0, 0, 0.75);
-      padding: 50px 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
-    ">
-      <div class="aboutme-description-inner" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 40px;">
-        <div class="aboutme-avatar">
-          <img src="./craps game/images/unknown.jpg" alt="Toniloba avatar" style="
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            border: 4px solid #ffd700;
-            box-shadow: 0 0 20px #ffd700;
-            object-fit: cover;
-          " />
-        </div>
-        <div class="aboutme-text" style="max-width: 500px; text-align: left; font-family: 'Enriqueta', serif; color: #ddd;">
-          <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 15px;">🧠 Meet the Creator</h2>
-          <p>
-            I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
-          </p>
-          <div class="aboutme-icons" style="margin-top: 20px;">
-            <div class="aboutme-icons">
-  <i class="fab fa-discord aboutme-icon"></i>
-  <i class="fab fa-twitter aboutme-icon"></i>
-  <i class="fab fa-youtube aboutme-icon"></i>
-  <i class="far fa-envelope aboutme-icon"></i>
-</div>
-          </div>
+    <div class="aboutme-description-inner" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 40px;">
+      
+      <!-- ✅ Avatar Image with Rounded Square -->
+      <div class="aboutme-avatar">
+        <img src="./craps game/images/unknown.jpg" alt="Toniloba avatar" style="
+          width: 160px;
+          height: 160px;
+          border-radius: 20px;
+          border: 4px solid #ffd700;
+          box-shadow: 0 0 20px #ffd700;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        " />
+      </div>
+
+      <!-- Creator Text -->
+      <div class="aboutme-text" style="max-width: 500px; text-align: left; font-family: 'Enriqueta', serif; color: #ddd;">
+        <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 15px;">🧠 Meet the Creator</h2>
+        <p>
+          I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
+        </p>
+
+        <!-- ✅ Social Icons -->
+        <div class="aboutme-icons" style="margin-top: 20px;">
+          <i class="fab fa-discord aboutme-icon" style="font-size: 26px; margin: 0 12px; color: #ff3c3c; transition: transform 0.3s ease, color 0.3s ease; cursor: pointer;"></i>
+          <i class="fab fa-twitter aboutme-icon" style="font-size: 26px; margin: 0 12px; color: #ff3c3c; transition: transform 0.3s ease, color 0.3s ease; cursor: pointer;"></i>
+          <i class="fab fa-youtube aboutme-icon" style="font-size: 26px; margin: 0 12px; color: #ff3c3c; transition: transform 0.3s ease, color 0.3s ease; cursor: pointer;"></i>
+          <i class="far fa-envelope aboutme-icon" style="font-size: 26px; margin: 0 12px; color: #ff3c3c; transition: transform 0.3s ease, color 0.3s ease; cursor: pointer;"></i>
         </div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Game Section -->
   <div class="main-section" id="game">
