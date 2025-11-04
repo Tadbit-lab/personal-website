@@ -16,7 +16,7 @@
 
   <!-- Preload -->
   <link rel="preload" href="./craps game/sounds/dice-roll.mp3" as="audio">
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" as="style">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -29,22 +29,43 @@
   </div>
 
   <!-- About Section -->
-  <div class="main-section" id="aboutme">
-    <div class="bio-container">
-      <div class="aboutme-description-inner">
+  <div class="main-section" id="aboutme" style="
+    background-image: url('./images/casino-lights.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 100px 25px;
+    text-align: center;
+  ">
+    <div class="bio-container" style="
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 50px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    ">
+      <div class="aboutme-description-inner" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 40px;">
         <div class="aboutme-avatar">
-          <img src="./images/creator-avatar.png" alt="Toniloba avatar" />
+          <img src="./craps game/images/unknown.jpg" alt="Toniloba avatar" style="
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 20px #ffd700;
+            object-fit: cover;
+          " />
         </div>
-        <div class="aboutme-text">
-          <h2>🧠 Meet the Creator</h2>
+        <div class="aboutme-text" style="max-width: 500px; text-align: left; font-family: 'Enriqueta', serif; color: #ddd;">
+          <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 15px;">🧠 Meet the Creator</h2>
           <p>
             I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
           </p>
-          <div class="aboutme-icons">
-            <i class="aboutme-icon fab fa-discord"></i>
-            <i class="aboutme-icon fab fa-twitter"></i>
-            <i class="aboutme-icon fab fa-youtube"></i>
-            <i class="aboutme-icon far fa-envelope"></i>
+          <div class="aboutme-icons" style="margin-top: 20px;">
+            <div class="aboutme-icons">
+  <i class="fab fa-discord aboutme-icon"></i>
+  <i class="fab fa-twitter aboutme-icon"></i>
+  <i class="fab fa-youtube aboutme-icon"></i>
+  <i class="far fa-envelope aboutme-icon"></i>
+</div>
           </div>
         </div>
       </div>
@@ -70,6 +91,9 @@
         <p>Welcome, <span id="displayName"></span>!</p>
         <p id="playerStats" class="player-stats">Wins: 0 | Losses: 0</p>
 
+        <!-- Dice Animation Area (moved above betting panel) -->
+        <div id="dice-area" style="margin: 30px auto;"></div>
+
         <div class="betting-panel">
           <p>💵 Balance: $<span id="balance">1000</span></p>
           <label for="betAmount">Place your bet:</label>
@@ -80,11 +104,6 @@
             <option value="even">Even</option>
             <option value="odd">Odd</option>
           </select>
-        </div>
-
-        <div class="dice-container">
-          <div class="die" id="die1">🎲</div>
-          <div class="die" id="die2">🎲</div>
         </div>
 
         <button class="roll-button" onclick="rollDice()">Roll Dice</button>
@@ -122,6 +141,9 @@
   <!-- Confetti Canvas -->
   <canvas id="confettiCanvas"></canvas>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Dice Animation Script -->
+  <script src="https://unpkg.com/roll-a-die@2.0.1/dist/roll-a-die.js"></script>
 
   <!-- Game Script -->
   <script src="./craps game/crapsgame.js"></script>

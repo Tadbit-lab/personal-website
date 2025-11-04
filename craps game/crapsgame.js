@@ -49,7 +49,7 @@ function startGame() {
   updateBetHistory();
 }
 
-// 🎲 Roll Dice with Even/Odd Betting
+// 🎲 Roll Dice with Animation and Delayed Sound
 function rollDice() {
   const bet = parseInt(document.getElementById("betAmount").value);
   const betType = document.getElementById("betType").value;
@@ -61,46 +61,52 @@ function rollDice() {
 
   playSound("diceSound");
 
-  const die1 = Math.floor(Math.random() * 6) + 1;
-  const die2 = Math.floor(Math.random() * 6) + 1;
-  const total = die1 + die2;
+  rollADie({
+    element: document.getElementById("dice-area"),
+    numberOfDice: 2,
+    soundVolume: 0.8,
+    delay: 500,
+    callback: (values) => {
+      const total = values.reduce((a, b) => a + b, 0);
+      document.getElementById("score").textContent = total;
 
-  animateDice(die1, die2);
-  document.getElementById("score").textContent = total;
+      const isEven = total % 2 === 0;
+      const win = (betType === "even" && isEven) || (betType === "odd" && !isEven);
 
-  const isEven = total % 2 === 0;
-  const win = (betType === "even" && isEven) || (betType === "odd" && !isEven);
+      setTimeout(() => {
+        if (win) {
+          balance += bet;
+          wins++;
+          playSound("winSound");
+          triggerConfetti();
+          showMessage(`🎉 You bet ${betType} and rolled ${total}. You win!`);
+        } else {
+          balance -= bet;
+          losses++;
+          playSound("loseSound");
+          showMessage(`💀 You bet ${betType} and rolled ${total}. You lose.`);
+        }
 
-  if (win) {
-    balance += bet;
-    wins++;
-    playSound("winSound");
-    triggerConfetti();
-    showMessage(`🎉 You bet ${betType} and rolled ${total}. You win!`);
-  } else {
-    balance -= bet;
-    losses++;
-    playSound("loseSound");
-    showMessage(`💀 You bet ${betType} and rolled ${total}. You lose.`);
-  }
+        document.getElementById("balance").textContent = balance;
+        localStorage.setItem("balance", balance);
+        localStorage.setItem("wins", wins);
+        localStorage.setItem("losses", losses);
 
-  document.getElementById("balance").textContent = balance;
-  localStorage.setItem("balance", balance);
-  localStorage.setItem("wins", wins);
-  localStorage.setItem("losses", losses);
+        betHistory.push({
+          result: win ? "✅ Won" : "❌ Lost",
+          amount: bet,
+          total: total,
+          betType: betType
+        });
 
-  betHistory.push({
-    result: win ? "✅ Won" : "❌ Lost",
-    amount: bet,
-    total: total,
-    betType: betType
+        localStorage.setItem("betHistory", JSON.stringify(betHistory));
+
+        updateStats();
+        updateLeaderboard(playerName, balance);
+        updateBetHistory();
+      }, 1000); // Delay win/lose sound and message
+    }
   });
-
-  localStorage.setItem("betHistory", JSON.stringify(betHistory));
-
-  updateStats();
-  updateLeaderboard(playerName, balance);
-  updateBetHistory();
 }
 
 // 🔊 Play Sound Helper
@@ -173,8 +179,6 @@ function updateBetHistory() {
 function nextRound() {
   document.getElementById("gameMessage").textContent = "";
   document.getElementById("score").textContent = "0";
-  document.getElementById("die1").textContent = "🎲";
-  document.getElementById("die2").textContent = "🎲";
   document.getElementById("nextRound").style.display = "none";
   document.getElementById("exitGame").style.display = "none";
 }
@@ -183,28 +187,6 @@ function nextRound() {
 function exitGame() {
   localStorage.clear();
   location.reload();
-}
-
-// 🎲 Unicode Dice
-function getDieFace(num) {
-  const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-  return faces[num - 1];
-}
-
-// 🎞️ Dice Animation
-function animateDice(d1, d2) {
-  const die1El = document.getElementById("die1");
-  const die2El = document.getElementById("die2");
-
-  die1El.style.transform = "rotate(20deg)";
-  die2El.style.transform = "rotate(-20deg)";
-
-  setTimeout(() => {
-    die1El.textContent = getDieFace(d1);
-    die2El.textContent = getDieFace(d2);
-    die1El.style.transform = "rotate(0deg)";
-    die2El.style.transform = "rotate(0deg)";
-  }, 300);
 }
 
 // 📜 Show/Hide History
@@ -224,4 +206,9 @@ function hideHistory() {
     document.getElementById("diceGame").style.display = "block";
     document.getElementById("gameMessage").textContent = "";
   }, 400);
+}
+
+function enterCasino() {
+  document.getElementById("title").style.display = "none";
+  document.getElementById("registration").style.display = "block";
 }
