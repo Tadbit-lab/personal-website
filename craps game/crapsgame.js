@@ -1,33 +1,18 @@
-let point = null;
-let gameStarted = false;
-let balance = 100;
+let balance = 1000;
 let playerName = "";
 let wins = 0;
 let losses = 0;
 let betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
 
-// 🧠 Load saved player data
+// 🧠 Show registration screen on page load
 window.addEventListener("load", () => {
-  const savedName = localStorage.getItem("playerName");
-  const savedBalance = localStorage.getItem("balance");
-  const savedWins = localStorage.getItem("wins");
-  const savedLosses = localStorage.getItem("losses");
+  document.getElementById("registration").style.display = "block";
+  document.getElementById("diceGame").style.display = "none";
 
-  if (savedName && savedBalance) {
-    playerName = savedName;
-    balance = parseInt(savedBalance);
-    wins = parseInt(savedWins) || 0;
-    losses = parseInt(savedLosses) || 0;
-
-    document.getElementById("registration").style.display = "none";
-    document.getElementById("diceGame").style.display = "block";
-    document.getElementById("displayName").textContent = playerName;
-    document.getElementById("balance").textContent = balance;
-    document.getElementById("playerPoint").textContent = "-";
-    updateStats();
-    updateLeaderboard(playerName, balance);
-    updateBetHistory();
-  }
+  playerName = "";
+  balance = 1000;
+  wins = 0;
+  losses = 0;
 });
 
 // 🎯 Start Game
@@ -51,7 +36,6 @@ function startGame() {
   document.getElementById("diceGame").style.display = "block";
   document.getElementById("displayName").textContent = playerName;
   document.getElementById("balance").textContent = balance;
-  document.getElementById("playerPoint").textContent = "-";
 
   localStorage.setItem("playerName", playerName);
   localStorage.setItem("balance", balance);
@@ -65,11 +49,13 @@ function startGame() {
   updateBetHistory();
 }
 
-// 🎲 Roll Dice
+// 🎲 Roll Dice with Even/Odd Betting
 function rollDice() {
   const bet = parseInt(document.getElementById("betAmount").value);
-  if (isNaN(bet) || bet < 1 || bet > 100) {
-    showMessage("⚠️ Bet must be between $1 and $100.");
+  const betType = document.getElementById("betType").value;
+
+  if (isNaN(bet) || bet < 1 || bet > balance) {
+    showMessage("⚠️ Bet must be between $1 and your current balance.");
     return;
   }
 
@@ -82,54 +68,39 @@ function rollDice() {
   animateDice(die1, die2);
   document.getElementById("score").textContent = total;
 
-  if (!gameStarted) {
-    handleComeOutRoll(total);
-  } else {
-    handlePointRoll(total);
-  }
-}
+  const isEven = total % 2 === 0;
+  const win = (betType === "even" && isEven) || (betType === "odd" && !isEven);
 
-// 🎯 Come-Out Roll
-function handleComeOutRoll(total) {
-  if (total === 7 || total === 11) {
-    updateBalance(true);
+  if (win) {
+    balance += bet;
     wins++;
     playSound("winSound");
     triggerConfetti();
-    showMessage(`🎉 You rolled ${total}. Natural! You win!`);
-    endRound();
-  } else if ([2, 3, 12].includes(total)) {
-    updateBalance(false);
+    showMessage(`🎉 You bet ${betType} and rolled ${total}. You win!`);
+  } else {
+    balance -= bet;
     losses++;
     playSound("loseSound");
-    showMessage(`💀 You rolled ${total}. Craps! You lose.`);
-    endRound();
-  } else {
-    point = total;
-    gameStarted = true;
-    document.getElementById("playerPoint").textContent = point;
-    showMessage(`🎯 Point is set to ${point}. Keep rolling!`);
+    showMessage(`💀 You bet ${betType} and rolled ${total}. You lose.`);
   }
-}
 
-// 🔁 Point Phase
-function handlePointRoll(total) {
-  if (total === point) {
-    updateBalance(true);
-    wins++;
-    playSound("winSound");
-    triggerConfetti();
-    showMessage(`🏆 You hit your point (${point})! You win!`);
-    endRound();
-  } else if (total === 7) {
-    updateBalance(false);
-    losses++;
-    playSound("loseSound");
-    showMessage(`😢 You rolled a 7. You lose.`);
-    endRound();
-  } else {
-    showMessage(`🎲 You rolled ${total}. Keep going!`);
-  }
+  document.getElementById("balance").textContent = balance;
+  localStorage.setItem("balance", balance);
+  localStorage.setItem("wins", wins);
+  localStorage.setItem("losses", losses);
+
+  betHistory.push({
+    result: win ? "✅ Won" : "❌ Lost",
+    amount: bet,
+    total: total,
+    betType: betType
+  });
+
+  localStorage.setItem("betHistory", JSON.stringify(betHistory));
+
+  updateStats();
+  updateLeaderboard(playerName, balance);
+  updateBetHistory();
 }
 
 // 🔊 Play Sound Helper
@@ -155,30 +126,13 @@ function triggerConfetti() {
 }
 
 // 💰 Balance + Leaderboard + History
-function updateBalance(win) {
-  const bet = parseInt(document.getElementById("betAmount").value);
-  if (win) balance += bet;
-  else balance -= bet;
-
-  document.getElementById("balance").textContent = balance;
-  localStorage.setItem("balance", balance);
-  localStorage.setItem("wins", wins);
-  localStorage.setItem("losses", losses);
-
-  betHistory.push({
-    result: win ? "✅ Won" : "❌ Lost",
-    amount: bet,
-    total: parseInt(document.getElementById("score").textContent)
-  });
-
-  localStorage.setItem("betHistory", JSON.stringify(betHistory));
-
-  updateStats();
-  updateLeaderboard(playerName, balance);
-  updateBetHistory();
+function updateStats() {
+  const stats = document.getElementById("playerStats");
+  if (stats) {
+    stats.innerHTML = `Wins: ${wins} | Losses: ${losses}`;
+  }
 }
 
-// 🏆 Leaderboard
 function updateLeaderboard(name, score) {
   const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
   const existing = leaderboard.find(entry => entry.name === name);
@@ -203,7 +157,6 @@ function updateLeaderboard(name, score) {
   });
 }
 
-// 📜 Betting History
 function updateBetHistory() {
   const list = document.getElementById("betHistoryList");
   if (!list) return;
@@ -211,26 +164,9 @@ function updateBetHistory() {
   list.innerHTML = "";
   betHistory.slice().reverse().forEach(entry => {
     const item = document.createElement("li");
-    item.textContent = `${entry.result} $${entry.amount} on roll ${entry.total}`;
+    item.textContent = `${entry.result} $${entry.amount} on roll ${entry.total} (${entry.betType})`;
     list.appendChild(item);
   });
-}
-
-// 📊 Update Stats Panel
-function updateStats() {
-  const stats = document.getElementById("playerStats");
-  if (stats) {
-    stats.innerHTML = `Wins: ${wins} | Losses: ${losses}`;
-  }
-}
-
-// 🔄 Reset Round
-function endRound() {
-  gameStarted = false;
-  point = null;
-  document.getElementById("playerPoint").textContent = "-";
-  document.getElementById("nextRound").style.display = "inline-block";
-  document.getElementById("exitGame").style.display = "inline-block";
 }
 
 // 🔁 Next Round
@@ -270,7 +206,8 @@ function animateDice(d1, d2) {
     die2El.style.transform = "rotate(0deg)";
   }, 300);
 }
- 
+
+// 📜 Show/Hide History
 function showHistory() {
   const section = document.getElementById("historySection");
   section.style.display = "block";
@@ -285,5 +222,6 @@ function hideHistory() {
   setTimeout(() => {
     section.style.display = "none";
     document.getElementById("diceGame").style.display = "block";
+    document.getElementById("gameMessage").textContent = "";
   }, 400);
 }

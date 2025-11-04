@@ -31,31 +31,23 @@
   <!-- About Section -->
   <div class="main-section" id="aboutme">
     <div class="bio-container">
-
-      <!-- Meet the Creator -->
-      <div class="aboutme-description">
-        <div class="aboutme-description-inner">
-          <div class="aboutme-text">
-            <h2>🧠 Meet the Creator</h2>
-            <p>
-              Hi, I'm <strong>Toniloba</strong> — the mind behind Craps Royale. I built this game to bring the thrill of the casino to your screen, with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
-            </p>
-          </div>
-          <div class="aboutme-avatar">
-            <img src="./images/creator-avatar.png" alt="Toniloba avatar" />
+      <div class="aboutme-description-inner">
+        <div class="aboutme-avatar">
+          <img src="./images/creator-avatar.png" alt="Toniloba avatar" />
+        </div>
+        <div class="aboutme-text">
+          <h2>🧠 Meet the Creator</h2>
+          <p>
+            I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
+          </p>
+          <div class="aboutme-icons">
+            <i class="aboutme-icon fab fa-discord"></i>
+            <i class="aboutme-icon fab fa-twitter"></i>
+            <i class="aboutme-icon fab fa-youtube"></i>
+            <i class="aboutme-icon far fa-envelope"></i>
           </div>
         </div>
       </div>
-
-   
-      <!-- Social Icons -->
-      <div class="aboutme-icons">
-        <i class="aboutme-icon fab fa-discord"></i>
-        <i class="aboutme-icon fab fa-twitter"></i>
-        <i class="aboutme-icon fab fa-youtube"></i>
-        <i class="aboutme-icon far fa-envelope"></i>
-      </div>
-
     </div>
   </div>
 
@@ -79,12 +71,16 @@
         <p id="playerStats" class="player-stats">Wins: 0 | Losses: 0</p>
 
         <div class="betting-panel">
-          <p>💵 Balance: $<span id="balance">100</span></p>
+          <p>💵 Balance: $<span id="balance">1000</span></p>
           <label for="betAmount">Place your bet:</label>
-          <input type="number" id="betAmount" min="1" max="100" value="10" />
-        </div>
+          <input type="number" id="betAmount" min="1" max="1000" value="10" />
 
-        <p>🎯 Current Point: <span id="playerPoint">-</span></p>
+          <label for="betType">Choose Even or Odd:</label>
+          <select id="betType">
+            <option value="even">Even</option>
+            <option value="odd">Odd</option>
+          </select>
+        </div>
 
         <div class="dice-container">
           <div class="die" id="die1">🎲</div>
@@ -130,4 +126,4 @@
   <!-- Game Script -->
   <script src="./craps game/crapsgame.js"></script>
 </body>
-</html>>
+</html>
