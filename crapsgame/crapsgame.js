@@ -15,6 +15,12 @@ window.addEventListener("load", () => {
   losses = 0;
 });
 
+// 🎯 Enter Casino from Title Screen
+function enterCasino() {
+  document.getElementById("title").style.display = "none";
+  document.getElementById("registration").style.display = "block";
+}
+
 // 🎯 Start Game
 function startGame() {
   const nameInput = document.getElementById("playerName");
@@ -206,9 +212,4 @@ function hideHistory() {
     document.getElementById("diceGame").style.display = "block";
     document.getElementById("gameMessage").textContent = "";
   }, 400);
-}
-
-function enterCasino() {
-  document.getElementById("title").style.display = "none";
-  document.getElementById("registration").style.display = "block";
 }
