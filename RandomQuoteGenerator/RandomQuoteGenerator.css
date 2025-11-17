@@ -1,0 +1,30 @@
+#random-quote-generator{
+    text-align: center;
+    color:white;
+}
+
+#random-quote-title{
+    margin: 30vh 0 10vh 0;
+    font-size: 5vh;
+}
+
+#random-quote-text{
+    font-size: 3vh;
+    width: 60vw;
+    margin: 0 auto;
+}
+
+#random-quote-author{
+    font-size: 2vh;
+    margin: 1vh 0vh 10vh 0vh;
+}
+
+#New-Random-Quote{
+    font-size: 2vh;
+
+}
+
+#New-Random-Quote:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
