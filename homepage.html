@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./titlesection/titlesection.css">
   <link rel="stylesheet" href="./aboutmesection/aboutmesection.css">
   <link rel="stylesheet" href="./crapsgame/crapsgame.css">
+  <link rel="stylesheet" href="./RandomQuoteGenerator/RandomQuoteGenerator.css">
 
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
@@ -18,7 +19,7 @@
   <link rel="preload" href="./craps game/sounds/dice-roll.mp3" as="audio">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body onload="getNewRandomQuote()" >
 
   <!-- Title Section -->
   <div class="main-section" id="title">
@@ -48,10 +49,10 @@
       <!-- ✅ Avatar Image with Rounded Square -->
       <div class="aboutme-avatar">
         <img src="./craps game/images/unknown.jpg" alt="Toniloba avatar" style="
-          width: 160px;
-          height: 160px;
+          width: 100px;
+          height: 100px;
           border-radius: 20px;
-          border: 4px solid #ffd700;
+          border: 0px solid #ffd700;
           box-shadow: 0 0 20px #ffd700;
           object-fit: cover;
           transition: transform 0.3s ease;
@@ -75,6 +76,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
   <!-- Game Section -->
@@ -151,6 +153,15 @@
   <script src="https://unpkg.com/roll-a-die@2.0.1/dist/roll-a-die.js"></script>
 
   <!-- Game Script -->
+   <div class="main-section"id="random-quote-generator" >
+     <div> 
+    <div id = "random-quote-title"> RANDOM QUOTE GENERATOR </div>
+    <div><div id="random-quote-text"></div></div>
+    <div><div id="random-quote-author"></div></div>
+    <div onclick="getNewRandomQuote()">New Quote</div>
+   </div>
+   </div>
   <script src="./crapsgame/crapsgame.js"></script>
+    <script src="./RandomQuoteGenerator/RandomQuoteGenerator.js"></script>
 </body>
 </html>
