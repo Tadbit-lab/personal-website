@@ -1,0 +1,29 @@
+{
+  "name": "personal-website",
+  "version": "1.0.0",
+  "description": "Personal Website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "website",
+    "portfolio",
+    "personal",
+    "nodejs"
+  ],
+  "author": "Toniloba Ilesanmi <oluwatonilobailesanmi0001@gmail.com> (https://github.com/Tadbit-lab)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tadbit-lab/personal-website/issues"
+  },
+  "homepage": "https://github.com/Tadbit-lab/personal-website#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
