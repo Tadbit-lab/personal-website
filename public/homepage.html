@@ -10,16 +10,16 @@
   <link rel="stylesheet" href="./aboutmesection/aboutmesection.css">
   <link rel="stylesheet" href="./crapsgame/crapsgame.css">
   <link rel="stylesheet" href="./RandomQuoteGenerator/RandomQuoteGenerator.css">
+ <link rel="stylesheet" href="./StockAnalysisDashboard/StockAnalysisDashboard.css">
 
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
 
   <!-- Preload -->
-  <link rel="preload" href="./craps game/sounds/dice-roll.mp3" as="audio">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Enriqueta:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="./crapsgame/sounds/dice-roll.mp3" as="audio">
 </head>
-<body onload="getNewRandomQuote()" >
+<body onload="getNewRandomQuote()">
 
   <!-- Title Section -->
   <div class="main-section" id="title">
@@ -29,55 +29,54 @@
     <button class="title-section-button" onclick="enterCasino()">Enter Casino</button>
   </div>
 
- <!-- About Section -->
-<div class="main-section" id="aboutme" style="
-  background-image: url('./images/casino-lights.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 100px 25px;
-  text-align: center;
-">
-  <div class="bio-container" style="
-    background-color: rgba(0, 0, 0, 0.75);
-    padding: 50px 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+  <!-- About Section -->
+  <div class="main-section" id="aboutme" style="
+    background-image: url('./images/casino-lights.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 100px 25px;
+    text-align: center;
   ">
-    <div class="aboutme-description-inner" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 40px;">
-      
-      <!-- ✅ Avatar Image with Rounded Square -->
-      <div class="aboutme-avatar">
-        <img src="./craps game/images/unknown.jpg" alt="Toniloba avatar" style="
-          width: 100px;
-          height: 100px;
-          border-radius: 20px;
-          border: 0px solid #ffd700;
-          box-shadow: 0 0 20px #ffd700;
-          object-fit: cover;
-          transition: transform 0.3s ease;
-        " />
-      </div>
+    <div class="bio-container" style="
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 50px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    ">
+      <div class="aboutme-description-inner" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 40px;">
+        
+        <!-- ✅ Avatar Image -->
+        <div class="aboutme-avatar">
+          <img src="./crapsgame/images/unknown.jpg" alt="Toniloba avatar" style="
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            border: 0px solid #ffd700;
+            box-shadow: 0 0 20px #ffd700;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+          " />
+        </div>
 
-      <!-- Creator Text -->
-      <div class="aboutme-text" style="max-width: 500px; text-align: left; font-family: 'Enriqueta', serif; color: #ddd;">
-        <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 15px;">🧠 Meet the Creator</h2>
-        <p>
-          I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
-        </p>
+        <!-- Creator Text -->
+        <div class="aboutme-text" style="max-width: 500px; text-align: left; font-family: 'Enriqueta', serif; color: #ddd;">
+          <h2 style="font-size: 36px; color: #ffd700; margin-bottom: 15px;">🧠 Meet the Creator</h2>
+          <p>
+            I'm <strong>Toniloba</strong>, the creator of Craps Royale. I built this game to bring the thrill of the casino to your screen — with bold visuals, fast gameplay, and a touch of Vegas magic. Whether you're here to test your luck or climb the leaderboard, you're in for a ride.
+          </p>
 
-        <!-- ✅ Social Icons -->
-        <div class="aboutme-icons">
-  <i class="fab fa-discord aboutme-icon"></i>
-  <i class="fab fa-twitter aboutme-icon"></i>
-  <i class="fab fa-youtube aboutme-icon"></i>
-  <i class="far fa-envelope aboutme-icon"></i>
-</div>
+          <!-- ✅ Social Icons -->
+          <div class="aboutme-icons">
+            <i class="fab fa-discord aboutme-icon"></i>
+            <i class="fab fa-twitter aboutme-icon"></i>
+            <i class="fab fa-youtube aboutme-icon"></i>
+            <i class="far fa-envelope aboutme-icon"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-</div>
 
   <!-- Game Section -->
   <div class="main-section" id="game">
@@ -98,7 +97,7 @@
         <p>Welcome, <span id="displayName"></span>!</p>
         <p id="playerStats" class="player-stats">Wins: 0 | Losses: 0</p>
 
-        <!-- Dice Animation Area (moved above betting panel) -->
+        <!-- Dice Animation Area -->
         <div id="dice-area" style="margin: 30px auto;"></div>
 
         <div class="betting-panel">
@@ -140,10 +139,10 @@
   </div>
 
   <!-- Sound Effects -->
-  <audio id="diceSound" src="./craps game/sounds/dice-roll.mp3" preload="auto"></audio>
-  <audio id="welcomeSound" src="./craps game/sounds/welcome.mp3" preload="auto"></audio>
-  <audio id="winSound" src="./craps game/sounds/win.mp3" preload="auto"></audio>
-  <audio id="loseSound" src="./craps game/sounds/lose.mp3" preload="auto"></audio>
+  <audio id="diceSound" src="./crapsgame/sounds/dice-roll.mp3" preload="auto"></audio>
+  <audio id="welcomeSound" src="./crapsgame/sounds/welcome.mp3" preload="auto"></audio>
+  <audio id="winSound" src="./crapsgame/sounds/win.mp3" preload="auto"></audio>
+  <audio id="loseSound" src="./crapsgame/sounds/lose.mp3" preload="auto"></audio>
 
   <!-- Confetti Canvas -->
   <canvas id="confettiCanvas"></canvas>
@@ -152,16 +151,28 @@
   <!-- Dice Animation Script -->
   <script src="https://unpkg.com/roll-a-die@2.0.1/dist/roll-a-die.js"></script>
 
-  <!-- Game Script -->
-   <div class="main-section"id="random-quote-generator" >
-     <div> 
-    <div id = "random-quote-title"> RANDOM QUOTE GENERATOR </div>
-    <div><div id="random-quote-text"></div></div>
-    <div><div id="random-quote-author"></div></div>
-    <div onclick="getNewRandomQuote()">New Quote</div>
-   </div>
-   </div>
-  <script src="./crapsgame/crapsgame.js"></script>
-    <script src="./RandomQuoteGenerator/RandomQuoteGenerator.js"></script>
+  <!-- Random Quote Generator -->
+<div class="main-section" id="random-quote-generator">
+  <div id="random-quote-title">RANDOM QUOTE GENERATOR</div>
+  <div id="random-quote-text"></div>
+  <div id="random-quote-author"></div>
+  <div id="New-Random-Quote" onclick="getNewRandomQuote()">New Quote</div>
+</div>
+
+<!-- Stock Analysis Dashboard -->
+<div class="main-section" id="stock-dashboard">
+  <div id="stock-analysis-title">STOCK-ANALYSIS-DASHBOARD</div>
+  <div id="stock-analysis-subtitle">Put in the stock symbol you'd like to analyze (e.g. MSFT)</div>
+  <input type="text" class="stock-analysis-dashboard-input" placeholder="Enter stock symbol">
+  <button class="stock-analysis-dashboard-button" onclick="analyzeStock()">Analyze Stock</button>
+ <div id="stock-analysis-result">
+  </div>
+</div>
+</div>
+
+<!-- Game Scripts -->
+<script src="./crapsgame/crapsgame.js"></script>
+<script src="./RandomQuoteGenerator/RandomQuoteGenerator.js"></script>
+<script src="./StockAnalysisDashboard/StockAnalysisDashboard.js"></script>
 </body>
 </html>
