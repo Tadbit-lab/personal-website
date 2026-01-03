@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/src/aboutmesection/aboutmesection.css">
 <link rel="stylesheet" href="/src/crapsgame/crapsgame.css">
 <link rel="stylesheet" href="/src/RandomQuoteGenerator/RandomQuoteGenerator.css">
-<link rel="stylesheet" href="/src/StockAnalysisDashboard/StockAnalysisDashboard.css">
+
 
 
   <!-- Fonts & Icons -->
@@ -163,22 +163,25 @@
 
 <!-- Stock Analysis Dashboard -->
 <div class="main-section" id="stock-dashboard">
-  <div id="stock-analysis-title">STOCK-ANALYSIS-DASHBOARD</div>
-  <div id="stock-analysis-subtitle">Put in the stock symbol you'd like to analyze (e.g. MSFT)</div>
-  <input type="text" class="stock-analysis-dashboard-input" placeholder="Enter stock symbol">
-  <button class="stock-analysis-dashboard-button" onclick="analyzeStock()">Analyze Stock</button>
- <div id="stock-analysis-result">
+  <div id="root"></div>
   </div>
-</div>
-</div>
 
-<!-- Game Scripts --><script 
- src="/src/crapsgame/crapsgame.js"></script>
-<script src="/src/RandomQuoteGenerator/RandomQuoteGenerator.js"></script>
-<script src="/src/StockAnalysisDashboard/StockAnalysisDashboard.js"></script>
+
+  <script src="/src/crapsgame/crapsgame.js"></script>
+  <script src="/src/RandomQuoteGenerator/RandomQuoteGenerator.js"></script>
+  <script src="/src/StockAnalysisDashboard/StockAnalysisDashboard.js"></script>
+  <script type="module" src="/src/main.tsx"></script>
+
+
 
 </body>
 </html>
 
- <!-- <div id="root"></div> --
-    <script type="module" src="/src/main.tsx"></script> 
+ 
+<!-- {/* 
+      /* <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        </div> */}
+      -->

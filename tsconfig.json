@@ -13,8 +13,9 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowImportingTsExtensions": false   // set to true only if you want to import with .tsx
   },
-  "include": ["src", "vite.config.ts"],
+  "include": ["src", "vite.config.ts", "StockAnalysisDashboard.tsx"],
   "exclude": ["node_modules"]
 }

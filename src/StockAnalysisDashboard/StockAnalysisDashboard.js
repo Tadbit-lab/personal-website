@@ -35,3 +35,4 @@ function analyzeStock() {
       alert('Failed to fetch stock data. Please try again later.');
     });
 }
+
