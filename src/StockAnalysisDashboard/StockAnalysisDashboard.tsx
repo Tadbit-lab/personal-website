@@ -27,8 +27,6 @@ export async function analyzeStock(stockSymbolToAnalyze: string) {
 
 export const VerticalAlignContainer = styled.div`
   width: 100%;
-  min-height: 100vh;
-  display: flex;
   justify-content: center;
 `;
 
@@ -37,16 +35,17 @@ export const VerticalAlignContent = styled.div`
 `;
 
 export const DashboardGridContainer = styled.div`
-  width: 80%;
-  height: 30%;
+  width: auto;
   margin: 0 auto;
   border: 1px solid red;
+  min-height: max-content;
 `;
+
 
 export const DashboardGridContent= styled.div`
   border-radius: 8px;
   background-color: White;
-  padding: 15px;
+  padding: 5px;
   color: BLACK;
-  height: 100%;
-  `;
+`;
+  export const PrimaryColor = '#4A90E2';
