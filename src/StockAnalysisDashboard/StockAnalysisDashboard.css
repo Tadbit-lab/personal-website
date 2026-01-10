@@ -1,0 +1,15 @@
+#stock-dashboard {
+  min-height: 100vh;
+  background-image: url('../crapsgame/images/stock.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+}
+
+
+.main-section {
+  padding: 40px;
+  text-align: center;
+}
+
