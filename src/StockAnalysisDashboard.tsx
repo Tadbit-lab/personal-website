@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './App.css'
+import './StockAnalysisDashboard/StockAnalysisDashboard.css'
 import {
   analyzeStock,
   VerticalAlignContainer,
@@ -7,13 +8,55 @@ import {
   DashboardGridContainer
 } from './StockAnalysisDashboard/StockAnalysisDashboard'
 import { Oval } from 'react-loader-spinner'
-import './StockAnalysisDashboard/StockAnalysisDashboard.css'
 import DashboardGrid from './StockAnalysisDashboard/DashboardGrid'
 
+/* ======================
+   TYPES
+====================== */
+
+interface StockDataType {
+  basicInfo: Record<string, any>
+  priceHistory: any
+  futureEarningsDates: string[]
+  newsArticles: any[]
+  newsTextAnalysis: any
+}
+
+interface AnalyzeStockResponse {
+  success: boolean
+  ticker: string
+  data: StockDataType
+}
+
+/* ======================
+   STYLES
+====================== */
+
+const spinnerOverlayStyle: React.CSSProperties = {
+  position: 'fixed',         // cover entire viewport
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  display: 'flex',
+  justifyContent: 'center',  // horizontal center
+  alignItems: 'center',      // vertical center
+  backgroundColor: 'rgba(0,0,0,0.3)', // optional overlay
+  zIndex: 9999,
+}
+
+/* ======================
+   COMPONENT
+====================== */
+
 function StockAnalysisStock() {
-  const [stockData, setStockData] = useState<any>(null)
-  const [stockSymbol, setStockSymbol] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [stockData, setStockData] = useState<StockDataType | null>(null)
+  const [stockSymbol, setStockSymbol] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+
+  /* ======================
+     ACTIONS
+  ====================== */
 
   async function runStockAnalysis() {
     if (!stockSymbol) {
@@ -22,83 +65,93 @@ function StockAnalysisStock() {
     }
 
     setLoading(true)
+
     try {
-      const gotStockData = await analyzeStock(stockSymbol)
-      console.log('BACKEND DATA:', gotStockData)
-      setStockData(gotStockData)
+      const response: AnalyzeStockResponse = await analyzeStock(stockSymbol)
+
+      if (!response || !response.data || !response.data.basicInfo) {
+        throw new Error('Invalid stock data returned')
+      }
+
+      // ✅ store ONLY response.data
+      setStockData(response.data)
+
     } catch (err) {
       console.error(err)
+      alert('Failed to fetch stock data. Try again.')
+      setStockData(null)
     } finally {
       setLoading(false)
     }
   }
 
-  // ======================
-  // RESULT VIEW
-  // ======================
-  if (stockData !== null) {
-    return (
-      <VerticalAlignContainer id="stock-dashboard">
-        <VerticalAlignContent>
-          <DashboardGridContainer>
-            <div>
-              <div
-                style={{ cursor: 'pointer', color: 'lightblue', marginBottom: '10px' }}
-                onClick={() => setStockData(null)}
-              >
-                ← Back
-              </div>
+  const hasValidStockData =
+    stockData !== null &&
+    stockData.basicInfo &&
+    Object.keys(stockData.basicInfo).length > 0
 
-              <DashboardGrid StockData={stockData} />
+  /* ======================
+     RENDER
+  ====================== */
 
-              {/* <pre
-                style={{
-                  color: 'white',
-                  background: 'rgba(0,0,0,0.7)',
-                  padding: '15px',
-                  marginTop: '20px',
-                  textAlign: 'left',
-                  overflowX: 'auto'
-                }}
-              >
-                {JSON.stringify(stockData, null, 2)}
-              </pre> */}
-            </div>
-          </DashboardGridContainer>
-        </VerticalAlignContent>
-      </VerticalAlignContainer>
-    )
-  }
-
-  // ======================
-  // INPUT VIEW
-  // ======================
   return (
-    <VerticalAlignContainer id="stock-dashboard">
-      <VerticalAlignContent>
+    <div className="stock-dashboard">
+      {hasValidStockData ? (
+        /* ======================
+           RESULT VIEW
+        ====================== */
+        <VerticalAlignContainer>
+          <VerticalAlignContent>
+            <DashboardGridContainer>
+              <div>
+                <div
+                  className="back-button"
+                  onClick={() => setStockData(null)}
+                >
+                  ← Back
+                </div>
+
+                <DashboardGrid StockData={stockData} />
+              </div>
+            </DashboardGridContainer>
+          </VerticalAlignContent>
+        </VerticalAlignContainer>
+      ) : (
+        /* ======================
+           INPUT VIEW
+        ====================== */
         <div className="main-section">
-          <div id="stock-analysis-title">STOCK-ANALYSIS-DASHBOARD</div>
+          <div id="stock-analysis-title">
+            STOCK-ANALYSIS-DASHBOARD
+          </div>
 
           <div id="stock-analysis-subtitle">
             Put in the stock symbol you'd like to analyze (e.g. MSFT)
           </div>
 
+          {/* ======================
+              CENTERED LOADING SPINNER
+          ====================== */}
           {loading && (
-            <Oval
-              height={80}
-              width={80}
-              color="grey"
-              secondaryColor="lightgrey"
-              strokeWidth={2}
-              ariaLabel="loading"
-            />
+            <div style={spinnerOverlayStyle}>
+              <Oval
+                height={80}
+                width={80}
+                color="#5F7280"
+                secondaryColor="#ccc"
+                strokeWidth={2}
+                ariaLabel="loading"
+              />
+            </div>
           )}
 
           <input
             type="text"
             className="stock-analysis-dashboard-input"
             value={stockSymbol}
-            onChange={(e) => setStockSymbol(e.target.value)}
+            onChange={(e) =>
+              setStockSymbol(e.target.value.toUpperCase())
+            }
             disabled={loading}
           />
 
@@ -110,8 +163,8 @@ function StockAnalysisStock() {
             {loading ? 'Analyzing…' : 'Analyze Stock'}
           </button>
         </div>
-      </VerticalAlignContent>
-    </VerticalAlignContainer>
+      )}
+    </div>
   )
 }
 
