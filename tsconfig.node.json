@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]      // Only include this if @types/node is installed
+  },
+  "include": ["vite.config.ts"],
+  "exclude": ["node_modules"]
+}
