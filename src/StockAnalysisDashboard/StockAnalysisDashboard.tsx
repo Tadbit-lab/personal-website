@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 
 /* ===========================
-   API CALL
+   API CALL (NGROK + LOCAL SAFE)
 =========================== */
+
 export async function analyzeStock(stockSymbolToAnalyze: string) {
   try {
+    // Same-origin request (works with localhost, ngrok, production)
     const response = await fetch(
-      `http://127.0.0.1:5000/analyze-stock/${stockSymbolToAnalyze}`
+      `/analyze-stock/${stockSymbolToAnalyze}`
     );
 
     if (!response.ok) {
@@ -14,7 +16,6 @@ export async function analyzeStock(stockSymbolToAnalyze: string) {
     }
 
     return await response.json();
-
   } catch (err) {
     console.error(err);
     return null;
@@ -22,11 +23,12 @@ export async function analyzeStock(stockSymbolToAnalyze: string) {
 }
 
 /* ===========================
-   LAYOUT COMPONENTS (FIXED)
+   LAYOUT COMPONENTS
 =========================== */
 
 export const VerticalAlignContainer = styled.div`
   width: 100%;
+  display: flex;
   justify-content: center;
 `;
 
@@ -37,25 +39,25 @@ export const VerticalAlignContent = styled.div`
 export const DashboardGridContainer = styled.div`
   width: auto;
   margin: 0 auto;
-  border: ;
   min-height: max-content;
 `;
 
-
-export const DashboardGridContent= styled.div`
+export const DashboardGridContent = styled.div`
   border-radius: 8px;
-  background-color: White;
+  background-color: white;
   padding: 5px;
-  color: BLACK;
+  color: black;
 `;
-  export const PrimaryColor = '#4A90E2';
+
+export const PrimaryColor = '#4A90E2';
 
 export const StickyTitle = styled.div`
   position: sticky;
   top: 0;
-  color: ${PrimaryColor}
+  background: white;
+  color: ${PrimaryColor};
+  z-index: 10;
 `;
-
 
 export const GridNoScroll = styled.div`
   .grid-stack {

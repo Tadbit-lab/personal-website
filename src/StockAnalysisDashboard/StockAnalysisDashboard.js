@@ -4,7 +4,8 @@ import styled from 'styled-components';
 =========================== */
 export async function analyzeStock(stockSymbolToAnalyze) {
     try {
-        const response = await fetch(`http://127.0.0.1:5000/analyze-stock/${stockSymbolToAnalyze}`);
+        const API_BASE = `http://${window.location.hostname}:5000`;
+        const response = await fetch(`${API_BASE}/analyze-stock/${stockSymbolToAnalyze}`);
         if (!response.ok) {
             return null;
         }
