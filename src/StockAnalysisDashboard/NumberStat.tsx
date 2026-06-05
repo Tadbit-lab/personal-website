@@ -1,28 +1,22 @@
-import {
-  VerticalAlignContainer,
-  VerticalAlignContent,
-} from './StockAnalysisDashboard'
-import Styled from 'styled-components'
-import { PrimaryColor } from './StockAnalysisDashboard'
-import numabbr from 'numabbr';
+import numabbr from 'numabbr'
 
-const NumberDisplay = Styled.div`
-color: ${PrimaryColor};
-font-size: 20px;
-`
-const LabelStyle = Styled.div`
-font-size: 12px;
-`
+interface NumberStatProps {
+  value: number | string
+  label: string
+}
 
-function NumberStat({value,label,center}: { value: number, label: string,center?:boolean }) {
+/**
+ * Simple stat card with a large value and a label.
+ * No styled-components — uses plain CSS classes from StockAnalysisDashboard.css.
+ */
+function NumberStat({ value, label }: NumberStatProps) {
+  const formatted = typeof value === 'number' ? numabbr(value) : value
 
   return (
-  <VerticalAlignContainer style={{textAlign: center ? 'center' : 'left'}}>
-    <VerticalAlignContent>
-      <NumberDisplay>{numabbr(value)}</NumberDisplay>
-      <LabelStyle>{label}</LabelStyle>
-    </VerticalAlignContent>
-  </VerticalAlignContainer>
+    <div className="stat-card">
+      <div className="stat-card-label">{label}</div>
+      <div className="stat-card-value">{formatted}</div>
+    </div>
   )
 }
 

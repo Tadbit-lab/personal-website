@@ -1,24 +1,22 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { useEffect, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
-import NumberStat from './NumberStat';
-import { PrimaryColor } from './StockAnalysisDashboard';
 ChartJS.register(ArcElement, Tooltip, Legend);
+/**
+ * Doughnut chart for news sentiment breakdown.
+ * Styled for dark Brutalist Lite theme.
+ */
 const NewsSentimentDoughnut = ({ stockAnalysisJson }) => {
     const [positive, setPositive] = useState(0);
     const [neutral, setNeutral] = useState(0);
     const [negative, setNegative] = useState(0);
-    const [sentences, setSentences] = useState(0);
-    const [words, setWords] = useState(0);
     useEffect(() => {
         const data = stockAnalysisJson?.newsTextAnalysis?.data;
         if (data) {
-            setPositive(data.sentiment.positive || 0);
-            setNeutral(data.sentiment.neutral || 0);
-            setNegative(data.sentiment.negative || 0);
-            setSentences(data.sentences || 0);
-            setWords(data.words || 0); // if you calculate words in backend, otherwise can compute length of text
+            setPositive(data.sentiment?.positive || 0);
+            setNeutral(data.sentiment?.neutral || 0);
+            setNegative(data.sentiment?.negative || 0);
         }
     }, [stockAnalysisJson]);
     const doughnutData = {
@@ -26,8 +24,9 @@ const NewsSentimentDoughnut = ({ stockAnalysisJson }) => {
         datasets: [
             {
                 data: [positive, neutral, negative],
-                backgroundColor: ['#22c55e', '#eab308', '#ef4444'], // green, yellow, red
-                borderWidth: 0,
+                backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+                borderColor: '#1e1e1e',
+                borderWidth: 2,
             },
         ],
     };
@@ -38,24 +37,25 @@ const NewsSentimentDoughnut = ({ stockAnalysisJson }) => {
         plugins: {
             legend: {
                 display: true,
-                position: 'top',
-                align: 'start', // left-align horizontally
+                position: 'bottom',
                 labels: {
-                    boxWidth: 15,
-                    boxHeight: 15,
+                    boxWidth: 12,
+                    boxHeight: 12,
                     padding: 12,
-                    font: { size: 12 },
+                    font: { size: 11 },
+                    color: '#888888',
                 },
+            },
+            tooltip: {
+                backgroundColor: '#1e1e1e',
+                titleColor: '#f0f0f0',
+                bodyColor: '#888888',
+                borderColor: '#2a2a2a',
+                borderWidth: 1,
+                cornerRadius: 4,
             },
         },
     };
-    return (_jsxs("div", { style: { position: 'relative', width: '100%', height: '250px' }, children: [_jsx("div", { style: { width: '180px', height: '180px', margin: '35px 0 0 0' }, children: _jsx(Doughnut, { data: doughnutData, options: options }) }), _jsxs("div", { style: {
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: PrimaryColor,
-                }, children: ["News Analysis", _jsx("div", { style: { paddingTop: '10px', paddingBottom: '10px' }, children: _jsx(NumberStat, { value: sentences, label: "Sentences analysed" }) }), _jsx("div", { style: { paddingBottom: '10px' }, children: _jsx(NumberStat, { value: words, label: "Words analysed" }) })] })] }));
+    return (_jsx("div", { style: { width: '100%', height: '180px' }, children: _jsx(Doughnut, { data: doughnutData, options: options }) }));
 };
 export default NewsSentimentDoughnut;

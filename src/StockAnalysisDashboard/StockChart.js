@@ -1,0 +1,88 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import { Line } from 'react-chartjs-2';
+import { CategoryScale } from 'chart.js';
+import Chart from 'chart.js/auto';
+import { PrimaryColor } from './StockAnalysisDashboard';
+Chart.register(CategoryScale);
+/**
+ * Flat, sharp line chart styled for Brutalist Lite.
+ * - Blue line, no fill
+ * - Subtle grid lines (#222)
+ * - No legend
+ */
+function StockChart({ priceHistory }) {
+    if (!priceHistory ||
+        !priceHistory.date ||
+        !priceHistory.price ||
+        priceHistory.date.length === 0) {
+        return (_jsx("div", { style: { color: 'var(--text-muted)', padding: '20px' }, children: "No price data available" }));
+    }
+    const data = {
+        labels: priceHistory.date,
+        datasets: [
+            {
+                data: priceHistory.price,
+                borderColor: PrimaryColor,
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: PrimaryColor,
+                tension: 0,
+                fill: false,
+            },
+        ],
+    };
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#1e1e1e',
+                titleColor: '#f0f0f0',
+                bodyColor: '#888888',
+                borderColor: '#2a2a2a',
+                borderWidth: 1,
+                cornerRadius: 4,
+                padding: 10,
+            },
+        },
+        scales: {
+            x: {
+                display: true,
+                grid: {
+                    color: '#222222',
+                    lineWidth: 0.5,
+                },
+                ticks: {
+                    color: '#555555',
+                    font: { size: 10 },
+                    maxTicksLimit: 8,
+                },
+                border: {
+                    color: '#2a2a2a',
+                },
+            },
+            y: {
+                display: true,
+                grid: {
+                    color: '#222222',
+                    lineWidth: 0.5,
+                },
+                ticks: {
+                    color: '#555555',
+                    font: { size: 10 },
+                },
+                border: {
+                    color: '#2a2a2a',
+                },
+            },
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
+    };
+    return (_jsx("div", { style: { width: '100%', height: '100%' }, children: _jsx(Line, { data: data, options: options }) }));
+}
+export default StockChart;

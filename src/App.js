@@ -1,10 +1,23 @@
-import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import StockDashboard from './StockAnalysisDashboard/StockDashboard';
+import CrapsGame from './CrapsGame/CrapsGame';
+import './index.css';
 function App() {
-    const [count, setCount] = useState(0);
-    return (_jsxs(_Fragment, { children: [_jsxs("div", { children: [_jsx("a", { href: "https://vite.dev", target: "_blank", children: _jsx("img", { src: viteLogo, className: "logo", alt: "Vite logo" }) }), _jsx("a", { href: "https://react.dev", target: "_blank", children: _jsx("img", { src: reactLogo, className: "logo react", alt: "React logo" }) })] }), _jsx("h1", { children: "Vite + React" }), _jsxs("div", { className: "card", children: [_jsxs("button", { onClick: () => setCount((count) => count + 1), children: ["count is ", count] }), _jsxs("p", { children: ["Edit ", _jsx("code", { children: "src/App.tsx" }), " and save to test HMR"] })] }), _jsx("p", { className: "read-the-docs", children: "Click on the Vite and React logos to learn more" })] }));
+    const [activeView, setActiveView] = useState('stock');
+    return (_jsxs("div", { style: { minHeight: '100vh', display: 'flex', flexDirection: 'column' }, children: [_jsxs("nav", { style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 24px',
+                    borderBottom: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-secondary)',
+                }, children: [_jsx("span", { style: {
+                            fontFamily: 'var(--font-heading)',
+                            fontWeight: 700,
+                            fontSize: '1rem',
+                            letterSpacing: '-0.02em',
+                            color: 'var(--text-primary)',
+                        }, children: "TONILOBA" }), _jsxs("div", { style: { display: 'flex', gap: '4px' }, children: [_jsx("button", { className: activeView === 'stock' ? 'btn btn-primary' : 'btn btn-ghost', onClick: () => setActiveView('stock'), style: { fontSize: '0.75rem', padding: '8px 16px' }, children: "Stock Dashboard" }), _jsx("button", { className: activeView === 'craps' ? 'btn btn-primary' : 'btn btn-ghost', onClick: () => setActiveView('craps'), style: { fontSize: '0.75rem', padding: '8px 16px' }, children: "Craps Simulator" })] })] }), _jsxs("main", { style: { flex: 1 }, children: [activeView === 'stock' && _jsx(StockDashboard, {}), activeView === 'craps' && _jsx(CrapsGame, {})] })] }));
 }
 export default App;

@@ -1,61 +1,38 @@
-import React from "react";
-import styled from "styled-components";
-import { PrimaryColor } from "./StockAnalysisDashboard";
+import React from 'react'
 
 type NewsLink = {
-  title: string;
-  link: string;
-};
+  title: string
+  link: string
+}
 
 type NewsListProps = {
-  newsLinks: NewsLink[];
-};
+  newsLinks: NewsLink[]
+}
 
+/**
+ * List of news article links. Plain CSS, no styled-components.
+ */
 const NewsList: React.FC<NewsListProps> = ({ newsLinks }) => {
+  if (!newsLinks || newsLinks.length === 0) {
+    return <div style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>No news available</div>
+  }
+
   return (
-    <ListContainer>
+    <div>
       {newsLinks.map((news, index) => (
-        <NewsItem
+        <a
           key={index}
+          className="news-link-item"
           href={news.link}
           target="_blank"
           rel="noopener noreferrer"
           title={news.title}
         >
           {news.title}
-        </NewsItem>
+        </a>
       ))}
-    </ListContainer>
-  );
-};
+    </div>
+  )
+}
 
-
-/* =======================
-   Styled Components
-   ======================= */
-
-const ListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`;
-
-const NewsItem = styled.a`
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  max-width: 100%;
-  font-size: 14px;
-  color: ${PrimaryColor};
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-
-
-export default NewsList;
+export default NewsList
