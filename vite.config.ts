@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/personal-website/', // ← add this for GitHub Pages
   plugins: [react()],
   server: {
     host: '0.0.0.0',
