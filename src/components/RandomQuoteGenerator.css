@@ -101,3 +101,21 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .hero-quote {
+    position: relative;
+    bottom: auto;
+    margin-top: 28px;
+    padding: 0 12px;
+  }
+
+  .quote-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .quote-content {
+    min-height: 44px;
+  }
+}
