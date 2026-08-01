@@ -8,7 +8,7 @@ function Landing() {
       <section className="landing-content" aria-labelledby="landing-title">
         <p className="eyebrow">PERSONAL SYSTEMS / 01</p>
         <h1 id="landing-title">Personal Systems</h1>
-        <p className="landing-subtitle">Interactive simulations and financial dashboards.</p>
+        <p className="landing-subtitle"> Craps game simulation and Stocks dashboard.</p>
         <div className="landing-actions">
           <Link className="action-button" to="/craps">Launch Craps Game <span aria-hidden="true">↗</span></Link>
           <Link className="action-button" to="/dashboard">Open Stock Dashboard <span aria-hidden="true">↗</span></Link>
