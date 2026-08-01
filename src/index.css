@@ -21,6 +21,10 @@
 .topbar-symbol-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
 .topbar-symbol-row h1 { margin: 0; font-size: 24px; letter-spacing: -0.03em; color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
 .topbar-symbol-row span, .muted-text { color: #f3f4f6; font-size: 12px; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.dashboard-search { display: flex; align-items: center; gap: 8px; padding: 4px; border: 1px solid rgba(255,255,255,0.16); border-radius: 6px; background: rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+.dashboard-search input { background: transparent; border: 0; color: #ffffff; outline: none; padding: 6px 8px; min-width: 88px; }
+.dashboard-search button { background: rgba(255,255,255,0.16); border: 0; border-radius: 4px; color: #ffffff; padding: 6px 10px; }
 .topbar-price { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .topbar-label { color: #f8fafc; font-size: 10px; letter-spacing: 0.14em; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
 .topbar-price strong { font-size: 24px; letter-spacing: -0.03em; color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }

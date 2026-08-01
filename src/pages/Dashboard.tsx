@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Watchlist, { WatchlistItem } from '../components/Watchlist'
 import StockChart from '../components/StockChart'
 
 const API = import.meta.env.VITE_API_BASE_URL
+const QUOTE_REFRESH_MS = 10_000
+const FUNDAMENTAL_CACHE_MS = 60 * 60 * 1_000
+const INITIAL_WATCHLIST = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL'] as const
 
-interface QuoteResponse {
+interface QuoteData {
   symbol: string
   current_price: number
   percent_change?: number
@@ -14,9 +17,12 @@ interface QuoteResponse {
   high?: number
   low?: number
   open?: number
+  volume?: number
+  market_cap?: number
+  pe_ratio?: number
 }
 
-interface ProfileResponse {
+interface ProfileData {
   name?: string
   industry?: string
   country?: string
@@ -37,13 +43,18 @@ interface CandlePoint {
   value: number
 }
 
-const watchlist: WatchlistItem[] = [
-  { symbol: 'AAPL', name: 'Apple Inc.', price: '---', change: '---', positive: true },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', price: '---', change: '---', positive: true },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: '---', change: '---', positive: true },
-  { symbol: 'TSLA', name: 'Tesla Inc.', price: '---', change: '---', positive: false },
-  { symbol: 'AMZN', name: 'Amazon.com', price: '---', change: '---', positive: true },
-]
+interface CacheEntry<T> {
+  data: T
+  lastUpdated: number
+}
+
+const watchlistNames: Record<string, string> = {
+  AAPL: 'Apple Inc.',
+  MSFT: 'Microsoft Corp.',
+  TSLA: 'Tesla Inc.',
+  NVDA: 'NVIDIA Corp.',
+  GOOGL: 'Alphabet Inc.',
+}
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -97,15 +108,44 @@ function normalizeCandles(payload: unknown): CandlePoint[] {
 }
 
 function Dashboard() {
-  const [symbol, setSymbol] = useState('AAPL')
-  const [quote, setQuote] = useState<QuoteResponse | null>(null)
-  const [profile, setProfile] = useState<ProfileResponse | null>(null)
+  const [activeSymbol, setActiveSymbol] = useState('AAPL')
+  const [watchlistSymbols, setWatchlistSymbols] = useState<string[]>([...INITIAL_WATCHLIST])
+  const [quoteCache, setQuoteCache] = useState<Record<string, CacheEntry<QuoteData>>>({})
+  const [fundamentalCache, setFundamentalCache] = useState<Record<string, CacheEntry<ProfileData>>>({})
+  const [watchlistQuotes, setWatchlistQuotes] = useState<Record<string, QuoteData>>({})
   const [candles, setCandles] = useState<CandlePoint[]>([])
   const [news, setNews] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [watchlistLoading, setWatchlistLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchInput, setSearchInput] = useState('')
 
-  const quoteChange = quote ? (quote.percent_change ?? quote.change ?? 0) : 0
+  const quoteCacheRef = useRef<Record<string, CacheEntry<QuoteData>>>({})
+  const fundamentalCacheRef = useRef<Record<string, CacheEntry<ProfileData>>>({})
+
+  useEffect(() => {
+    quoteCacheRef.current = quoteCache
+  }, [quoteCache])
+
+  useEffect(() => {
+    fundamentalCacheRef.current = fundamentalCache
+  }, [fundamentalCache])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const normalized = searchInput.trim().toUpperCase()
+      if (normalized.length <= 5) {
+        setSearchInput(normalized)
+      }
+    }, 500)
+
+    return () => window.clearTimeout(timer)
+  }, [searchInput])
+
+  const currentQuote = quoteCache[activeSymbol]?.data ?? watchlistQuotes[activeSymbol] ?? null
+  const currentProfile = fundamentalCache[activeSymbol]?.data ?? null
+
+  const quoteChange = currentQuote ? (currentQuote.percent_change ?? currentQuote.change ?? 0) : 0
   const isPositive = quoteChange >= 0
   const topBarColor = isPositive ? '#22c55e' : '#ef4444'
 
@@ -117,33 +157,108 @@ function Dashboard() {
     return response.json() as Promise<T>
   }
 
+  const setQuoteEntry = (symbol: string, data: QuoteData) => {
+    const entry: CacheEntry<QuoteData> = { data, lastUpdated: Date.now() }
+    quoteCacheRef.current = { ...quoteCacheRef.current, [symbol]: entry }
+    setQuoteCache(quoteCacheRef.current)
+    setWatchlistQuotes((previous) => ({ ...previous, [symbol]: data }))
+    return entry
+  }
+
+  const setFundamentalEntry = (symbol: string, data: ProfileData) => {
+    const entry: CacheEntry<ProfileData> = { data, lastUpdated: Date.now() }
+    fundamentalCacheRef.current = { ...fundamentalCacheRef.current, [symbol]: entry }
+    setFundamentalCache(fundamentalCacheRef.current)
+    return entry
+  }
+
+  const loadQuote = async (symbolToLoad: string): Promise<QuoteData | null> => {
+    const cached = quoteCacheRef.current[symbolToLoad]
+    if (cached && Date.now() - cached.lastUpdated < QUOTE_REFRESH_MS) {
+      return cached.data
+    }
+
+    try {
+      const data = await fetchJson<QuoteData>(`/api/quote/${symbolToLoad}`)
+      setQuoteEntry(symbolToLoad, data)
+      return data
+    } catch {
+      return null
+    }
+  }
+
+  const loadFundamental = async (symbolToLoad: string): Promise<ProfileData | null> => {
+    const cached = fundamentalCacheRef.current[symbolToLoad]
+    if (cached && Date.now() - cached.lastUpdated < FUNDAMENTAL_CACHE_MS) {
+      return cached.data
+    }
+
+    try {
+      const data = await fetchJson<ProfileData>(`/api/profile/${symbolToLoad}`)
+      setFundamentalEntry(symbolToLoad, data)
+      return data
+    } catch {
+      return null
+    }
+  }
+
   useEffect(() => {
     let active = true
 
-    const loadData = async () => {
+    const preloadWatchlist = async () => {
+      setWatchlistLoading(true)
+      setError(null)
+
+      const results = await Promise.allSettled(INITIAL_WATCHLIST.map((symbol) => loadQuote(symbol)))
+      if (!active) {
+        return
+      }
+
+      const failed = results.filter((result) => result.status === 'rejected' || result.value === null).length
+      if (failed > 0 && !error) {
+        setError('Some watchlist quotes are still syncing.')
+      }
+      setWatchlistLoading(false)
+    }
+
+    void preloadWatchlist()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+
+    const loadActiveSymbolData = async () => {
       setLoading(true)
       setError(null)
 
       try {
         const [quoteData, profileData, candlesData, newsData] = await Promise.all([
-          fetchJson<QuoteResponse>(`/api/quote/${symbol}`),
-          fetchJson<ProfileResponse>(`/api/profile/${symbol}`),
-          fetchJson<unknown>(`/api/candles/${symbol}?resolution=D&days=30`),
-          fetchJson<NewsItem[]>(`/api/news/${symbol}`),
+          loadQuote(activeSymbol),
+          loadFundamental(activeSymbol),
+          fetchJson<unknown>(`/api/candles/${activeSymbol}?resolution=D&days=30`),
+          fetchJson<NewsItem[]>(`/api/news/${activeSymbol}`),
         ])
 
         if (!active) {
           return
         }
 
-        setQuote(quoteData)
-        setProfile(profileData)
+        if (!quoteData) {
+          throw new Error('quote failed')
+        }
+
+        if (profileData) {
+          setFundamentalEntry(activeSymbol, profileData)
+        }
+
         setCandles(normalizeCandles(candlesData))
         setNews(Array.isArray(newsData) ? newsData.slice(0, 5) : [])
       } catch {
         if (active) {
-          setQuote(null)
-          setProfile(null)
           setCandles([])
           setNews([])
           setError('Live market data is temporarily unavailable.')
@@ -155,48 +270,62 @@ function Dashboard() {
       }
     }
 
-    void loadData()
+    void loadActiveSymbolData()
 
     return () => {
       active = false
     }
-  }, [symbol])
+  }, [activeSymbol])
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      const refreshQuote = async () => {
-        try {
-          const updatedQuote = await fetchJson<QuoteResponse>(`/api/quote/${symbol}`)
-          setQuote(updatedQuote)
-          setError(null)
-        } catch {
-          setError('Quote refresh failed. Showing last known data.')
-        }
-      }
-
-      void refreshQuote()
-    }, 10000)
+      void Promise.allSettled(watchlistSymbols.map((symbol) => loadQuote(symbol)))
+    }, QUOTE_REFRESH_MS)
 
     return () => window.clearInterval(id)
-  }, [symbol])
+  }, [watchlistSymbols])
 
-  const watchlistItems = useMemo(() => watchlist.map((item) => {
-    if (item.symbol !== symbol || !quote) {
-      return item
+  const handleSearchSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const normalized = searchInput.trim().toUpperCase()
+
+    if (!normalized || normalized.length > 5) {
+      setError('Please enter a valid ticker symbol between 1 and 5 characters.')
+      return
     }
 
-    const changeValue = quote.percent_change ?? quote.change ?? 0
-    const changeText = `${changeValue >= 0 ? '+' : ''}${compactFormatter.format(changeValue)}%`
-
-    return {
-      ...item,
-      price: currencyFormatter.format(quote.current_price),
-      change: changeText,
-      positive: changeValue >= 0,
+    const quoteData = await loadQuote(normalized)
+    if (!quoteData) {
+      setError('Unable to load that ticker right now.')
+      return
     }
-  }), [quote, symbol])
 
-  const chartValues = candles.length > 0 ? candles.map((entry) => entry.value) : [quote?.current_price ?? 0]
+    setActiveSymbol(normalized)
+    setSearchInput('')
+    setWatchlistSymbols((previous) => (previous.includes(normalized) ? previous : [...previous, normalized]))
+    setError(null)
+  }
+
+  const watchlistItems = useMemo<WatchlistItem[]>(() => {
+    return watchlistSymbols.map((symbol) => {
+      const quote = watchlistQuotes[symbol] ?? quoteCache[symbol]?.data ?? null
+      const changeValue = quote?.percent_change ?? quote?.change ?? 0
+      const changeText = quote
+        ? `${changeValue >= 0 ? '+' : ''}${compactFormatter.format(changeValue)}%`
+        : '---'
+      const priceText = quote ? currencyFormatter.format(quote.current_price) : '---'
+
+      return {
+        symbol,
+        name: watchlistNames[symbol] ?? symbol,
+        price: watchlistLoading ? '...' : priceText,
+        change: watchlistLoading ? 'syncing' : changeText,
+        positive: quote ? changeValue >= 0 : true,
+      }
+    })
+  }, [quoteCache, watchlistLoading, watchlistQuotes, watchlistSymbols])
+
+  const chartValues = candles.length > 0 ? candles.map((entry) => entry.value) : [currentQuote?.current_price ?? 0]
   const chartLabels = candles.length > 0 ? candles.map((entry) => entry.label) : ['Live']
 
   return (
@@ -217,34 +346,51 @@ function Dashboard() {
               <div>
                 <p className="eyebrow">MARKET OVERVIEW</p>
                 <div className="topbar-symbol-row">
-                  <h1>{symbol}</h1>
-                  <span>{profile?.name ?? 'Live equity quote'}</span>
+                  <h1>{activeSymbol}</h1>
+                  <span>{currentProfile?.name ?? 'Live equity quote'}</span>
                 </div>
               </div>
-              <div className="topbar-price">
-                <span className="topbar-label">LAST PRICE</span>
-                <strong>{quote ? currencyFormatter.format(quote.current_price) : '—'}</strong>
-                <span className="change-pill" style={{ color: topBarColor }}>
-                  {quote ? `${isPositive ? '+' : ''}${compactFormatter.format(quoteChange)}%` : '—'}
-                </span>
+              <div className="topbar-actions">
+                <form className="dashboard-search" onSubmit={handleSearchSubmit}>
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    placeholder="Ticker"
+                    maxLength={5}
+                  />
+                  <button type="submit">Search</button>
+                </form>
+                <div className="topbar-price">
+                  <span className="topbar-label">LAST PRICE</span>
+                  <strong>{currentQuote ? currencyFormatter.format(currentQuote.current_price) : '—'}</strong>
+                  <span className="change-pill" style={{ color: topBarColor }}>
+                    {currentQuote ? `${isPositive ? '+' : ''}${compactFormatter.format(quoteChange)}%` : '—'}
+                  </span>
+                </div>
               </div>
             </section>
 
             <section className="dashboard-grid">
-              <Watchlist items={watchlistItems} selected={symbol} onSelect={setSymbol} />
+              <div className="watchlist-column">
+                <div className="watchlist-loading">
+                  {watchlistLoading ? 'Loading watchlist…' : `Streaming ${watchlistSymbols.length} symbols`}
+                </div>
+                <Watchlist items={watchlistItems} selected={activeSymbol} onSelect={setActiveSymbol} />
+              </div>
 
               <article className="dashboard-main-card">
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">PRICE ACTION</p>
-                    <h2>{symbol} intraday</h2>
+                    <h2>{activeSymbol} intraday</h2>
                   </div>
                   <span className="muted-text">USD • NASDAQ</span>
                 </div>
 
-                {loading && !quote ? (
+                {loading && !currentQuote ? (
                   <div className="panel-state">Loading latest market data…</div>
-                ) : error && !quote ? (
+                ) : error && !currentQuote ? (
                   <div className="panel-state">{error}</div>
                 ) : (
                   <>
@@ -254,19 +400,19 @@ function Dashboard() {
                     <div className="stats-strip">
                       <div>
                         <span className="muted-text">Open</span>
-                        <strong>{quote?.open ? currencyFormatter.format(quote.open) : '—'}</strong>
+                        <strong>{currentQuote?.open ? currencyFormatter.format(currentQuote.open) : '—'}</strong>
                       </div>
                       <div>
                         <span className="muted-text">High</span>
-                        <strong>{quote?.high ? currencyFormatter.format(quote.high) : '—'}</strong>
+                        <strong>{currentQuote?.high ? currencyFormatter.format(currentQuote.high) : '—'}</strong>
                       </div>
                       <div>
                         <span className="muted-text">Low</span>
-                        <strong>{quote?.low ? currencyFormatter.format(quote.low) : '—'}</strong>
+                        <strong>{currentQuote?.low ? currencyFormatter.format(currentQuote.low) : '—'}</strong>
                       </div>
                       <div>
                         <span className="muted-text">Prev Close</span>
-                        <strong>{quote?.previous_close ? currencyFormatter.format(quote.previous_close) : '—'}</strong>
+                        <strong>{currentQuote?.previous_close ? currencyFormatter.format(currentQuote.previous_close) : '—'}</strong>
                       </div>
                     </div>
                   </>
@@ -288,7 +434,7 @@ function Dashboard() {
                       <span className="news-time">{article.published ?? 'Now'}</span>
                     </a>
                   )) : (
-                    <div className="panel-state secondary">No news available for {symbol} right now.</div>
+                    <div className="panel-state secondary">No news available for {activeSymbol} right now.</div>
                   )}
                 </div>
               </aside>
@@ -305,15 +451,15 @@ function Dashboard() {
                 <div className="detail-grid">
                   <div>
                     <span className="muted-text">Market cap</span>
-                    <strong>{profile?.market_cap ? currencyFormatter.format(profile.market_cap) : '—'}</strong>
+                    <strong>{currentProfile?.market_cap ? currencyFormatter.format(currentProfile.market_cap) : '—'}</strong>
                   </div>
                   <div>
                     <span className="muted-text">Volume</span>
-                    <strong>—</strong>
+                    <strong>{currentQuote?.volume ? compactFormatter.format(currentQuote.volume) : '—'}</strong>
                   </div>
                   <div>
-                    <span className="muted-text">Day range</span>
-                    <strong>{quote?.high && quote?.low ? `${currencyFormatter.format(quote.low)} – ${currencyFormatter.format(quote.high)}` : '—'}</strong>
+                    <span className="muted-text">P/E</span>
+                    <strong>{currentQuote?.pe_ratio ? compactFormatter.format(currentQuote.pe_ratio) : '—'}</strong>
                   </div>
                 </div>
               </article>
@@ -328,11 +474,11 @@ function Dashboard() {
                 <div className="detail-grid range-card">
                   <div>
                     <span className="muted-text">High</span>
-                    <strong>{quote?.high ? currencyFormatter.format(quote.high) : '—'}</strong>
+                    <strong>{currentQuote?.high ? currencyFormatter.format(currentQuote.high) : '—'}</strong>
                   </div>
                   <div>
                     <span className="muted-text">Low</span>
-                    <strong>{quote?.low ? currencyFormatter.format(quote.low) : '—'}</strong>
+                    <strong>{currentQuote?.low ? currencyFormatter.format(currentQuote.low) : '—'}</strong>
                   </div>
                 </div>
               </article>
@@ -347,15 +493,15 @@ function Dashboard() {
                 <div className="detail-grid">
                   <div>
                     <span className="muted-text">Name</span>
-                    <strong>{profile?.name ?? symbol}</strong>
+                    <strong>{currentProfile?.name ?? activeSymbol}</strong>
                   </div>
                   <div>
                     <span className="muted-text">Industry</span>
-                    <strong>{profile?.industry ?? '—'}</strong>
+                    <strong>{currentProfile?.industry ?? '—'}</strong>
                   </div>
                   <div>
                     <span className="muted-text">Country</span>
-                    <strong>{profile?.country ?? '—'}</strong>
+                    <strong>{currentProfile?.country ?? '—'}</strong>
                   </div>
                 </div>
               </article>
