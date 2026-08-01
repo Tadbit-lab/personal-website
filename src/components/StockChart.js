@@ -1,32 +1,32 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler } from 'chart.js';
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js';
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
 function StockChart({ values, labels, positive }) {
-    const color = positive ? '#63d6ad' : '#e77676';
+    const color = positive ? '#22c55e' : '#ef4444';
     const data = {
         labels,
         datasets: [{
                 data: values,
                 borderColor: color,
-                backgroundColor: positive ? 'rgba(99, 214, 173, .08)' : 'rgba(231, 118, 118, .08)',
                 borderWidth: 2,
                 pointRadius: 0,
-                pointHoverRadius: 4,
-                fill: true,
-                tension: .35,
+                pointHoverRadius: 0,
+                fill: false,
+                tension: 0.2,
             }],
     };
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: { duration: 0 },
         plugins: {
             legend: { display: false },
-            tooltip: { displayColors: false, backgroundColor: '#171c1c', titleColor: '#f2f0e9', bodyColor: '#a4afaa', borderColor: '#36403d', borderWidth: 1 },
+            tooltip: { displayColors: false, backgroundColor: '#111827', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 },
         },
         scales: {
-            x: { grid: { color: 'rgba(130, 150, 143, .09)' }, ticks: { color: '#71807a', maxTicksLimit: 6 } },
-            y: { grid: { color: 'rgba(130, 150, 143, .09)' }, ticks: { color: '#71807a', callback: (value) => `$${value}` } },
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', maxTicksLimit: 6 } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', callback: (value) => `$${value}` } },
         },
     };
     return _jsx("div", { className: "chart-wrap", children: _jsx(Line, { data: data, options: options }) });

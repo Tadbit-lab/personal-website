@@ -13,7 +13,8 @@ function Craps() {
     const [amount, setAmount] = useState(25);
     const [message, setMessage] = useState('Place a wager to begin the come-out roll.');
     const audio = useRef({});
-    useEffect(() => { ['dice-roll', 'dice-hit', 'win', 'lose', 'chip'].forEach((name) => { const sound = new Audio(`/sounds/${name}.mp3`); sound.preload = 'auto'; audio.current[name] = sound; }); }, []);
+    const soundBase = `${import.meta.env.BASE_URL}sounds/`;
+    useEffect(() => { ['dice-roll', 'dice-hit', 'win', 'lose', 'welcome'].forEach((name) => { const sound = new Audio(`${soundBase}${name}.mp3`); sound.preload = 'auto'; audio.current[name] = sound; }); }, [soundBase]);
     const play = (name) => { const sound = audio.current[name]; if (sound) {
         sound.currentTime = 0;
         void sound.play().catch(() => undefined);
