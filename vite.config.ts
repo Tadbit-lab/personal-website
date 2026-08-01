@@ -7,7 +7,19 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      'chartjs-chart-financial': 'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js',
+      'chartjs-chart-financial':
+        'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js',
+    },
+  },
+  optimizeDeps: {
+    include: [
+      'chartjs-chart-financial',
+      'chartjs-adapter-date-fns',
+    ],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/chartjs-chart-financial/, /chartjs-adapter-date-fns/, /node_modules/],
     },
   },
   server: {

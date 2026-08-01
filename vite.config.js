@@ -9,6 +9,17 @@ export default defineConfig({
             'chartjs-chart-financial': 'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js',
         },
     },
+    optimizeDeps: {
+        include: [
+            'chartjs-chart-financial',
+            'chartjs-adapter-date-fns',
+        ],
+    },
+    build: {
+        commonjsOptions: {
+            include: [/chartjs-chart-financial/, /chartjs-adapter-date-fns/, /node_modules/],
+        },
+    },
     server: {
         // TODO(security): Use 127.0.0.1 for local dev to avoid exposing to network
         host: '127.0.0.1',
