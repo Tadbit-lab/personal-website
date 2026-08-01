@@ -86,7 +86,23 @@ function StockDashboard() {
      =========================== */
 
   return (
-    <div className="stock-dashboard">
+    <div className="stock-dashboard-wrapper" style={{
+      backgroundImage: "url('/crapsgame/images/stock.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+      minHeight: '100%',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <div className="stock-overlay" style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        zIndex: 0
+      }}></div>
+      <div className="stock-dashboard" style={{ position: 'relative', zIndex: 1, flex: 1 }}>
       {hasData ? (
         /* ---- RESULT VIEW ---- */
         <div className="container">
@@ -230,6 +246,7 @@ function StockDashboard() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }

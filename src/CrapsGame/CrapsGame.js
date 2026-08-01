@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Dice from './Dice';
 import StatsTable from './StatsTable';
 import RollButton from './RollButton';
@@ -29,6 +29,29 @@ function CrapsGame() {
     const [messageType, setMessageType] = useState('neutral');
     const [history, setHistory] = useState([]);
     /* ===========================
+       AUDIO LOGIC
+       =========================== */
+    const diceSound = useRef(null);
+    const winSound = useRef(null);
+    const loseSound = useRef(null);
+    const welcomeSound = useRef(null);
+    useEffect(() => {
+        diceSound.current = new Audio('/crapsgame/sounds/dice-roll.mp3');
+        winSound.current = new Audio('/crapsgame/sounds/win.mp3');
+        loseSound.current = new Audio('/crapsgame/sounds/lose.mp3');
+        welcomeSound.current = new Audio('/crapsgame/sounds/welcome.mp3');
+        // Play welcome on mount
+        welcomeSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e));
+    }, []);
+    const stopAllSounds = useCallback(() => {
+        [diceSound, winSound, loseSound, welcomeSound].forEach(ref => {
+            if (ref.current) {
+                ref.current.pause();
+                ref.current.currentTime = 0;
+            }
+        });
+    }, []);
+    /* ===========================
        ROLL LOGIC — Accurate Craps Rules
        =========================== */
     const rollDice = useCallback(() => {
@@ -41,6 +64,10 @@ function CrapsGame() {
             return;
         }
         setRolling(true);
+        stopAllSounds();
+        if (diceSound.current) {
+            diceSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e));
+        }
         // Simulate roll delay
         setTimeout(() => {
             const d1 = Math.floor(Math.random() * 6) + 1;
@@ -143,22 +170,28 @@ function CrapsGame() {
     /* ===========================
        WIN / LOSS HANDLERS
        =========================== */
-    function handleWin(amount, msg) {
+    const handleWin = useCallback((amount, msg) => {
         setBalance(prev => prev + amount);
         setWins(prev => prev + 1);
         setMessage(msg);
         setMessageType('win');
         setCurrentStreak(prev => streakType === 'win' ? prev + 1 : 1);
         setStreakType('win');
-    }
-    function handleLoss(amount, msg) {
+        stopAllSounds();
+        if (winSound.current)
+            winSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e));
+    }, [streakType, stopAllSounds]);
+    const handleLoss = useCallback((amount, msg) => {
         setBalance(prev => prev - amount);
         setLosses(prev => prev + 1);
         setMessage(msg);
         setMessageType('lose');
         setCurrentStreak(prev => streakType === 'loss' ? prev + 1 : 1);
         setStreakType('loss');
-    }
+        stopAllSounds();
+        if (loseSound.current)
+            loseSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e));
+    }, [streakType, stopAllSounds]);
     /* ===========================
        RESET
        =========================== */
@@ -184,18 +217,28 @@ function CrapsGame() {
     /* ===========================
        RENDER
        =========================== */
-    return (_jsxs("div", { className: "craps-game", children: [_jsxs("div", { className: "craps-header", children: [_jsx("h1", { children: "Craps Simulator" }), _jsx("p", { children: "Accurate Pass Line and Don't Pass rules" })] }), _jsxs("div", { className: "craps-layout", children: [_jsxs("div", { className: "craps-main", children: [_jsxs("div", { className: "phase-indicator", children: ["Phase: ", _jsx("span", { className: "phase-value", children: phase === 'comeout' ? 'COME OUT' : `POINT — ${pointNumber}` })] }), _jsxs("div", { className: "dice-area", children: [_jsx(Dice, { value: die1, rolling: rolling }), _jsx(Dice, { value: die2, rolling: rolling })] }), _jsx("div", { className: `craps-message ${messageType}`, children: message }), _jsxs("div", { className: "craps-controls", children: [_jsxs("div", { className: "craps-bet-row", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "craps-bet-type", children: "Bet Type" }), _jsxs("select", { id: "craps-bet-type", value: betType, onChange: (e) => setBetType(e.target.value), disabled: phase === 'point' || rolling, children: [_jsx("option", { value: "pass", children: "Pass Line" }), _jsx("option", { value: "dontpass", children: "Don't Pass" })] })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "craps-bet-amount", children: "Bet Amount ($)" }), _jsx("input", { type: "number", id: "craps-bet-amount", min: 1, max: balance, value: betAmount, onChange: (e) => setBetAmount(Math.max(1, parseInt(e.target.value) || 1)), disabled: rolling })] })] }), _jsx(RollButton, { onRoll: rollDice, onReset: resetGame, disabled: balance <= 0, rolling: rolling })] }), recentHistory.length > 0 && (_jsxs("div", { className: "history-card", children: [_jsx("h3", { children: "Roll History" }), recentHistory.map((entry, i) => (_jsxs("div", { className: "history-item", children: [_jsxs("span", { children: ["[", entry.die1, "+", entry.die2, "] = ", entry.roll, ' ', "(", entry.betType === 'pass' ? 'Pass' : "Don't Pass", ")"] }), _jsx("span", { style: {
-                                                    color: entry.result === 'win'
+    return (_jsxs("div", { className: "craps-game-wrapper", style: {
+            backgroundImage: "url('/crapsgame/images/dice-on-craps-table-2260559.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'relative'
+        }, children: [_jsx("div", { className: "craps-overlay", style: {
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    zIndex: 0
+                } }), _jsxs("div", { className: "craps-game", style: { position: 'relative', zIndex: 1 }, children: [_jsxs("div", { className: "craps-header", children: [_jsx("h1", { children: "Craps Simulator" }), _jsx("p", { children: "Accurate Pass Line and Don't Pass rules" })] }), _jsxs("div", { className: "craps-layout", children: [_jsxs("div", { className: "craps-main", children: [_jsxs("div", { className: "phase-indicator", children: ["Phase: ", _jsx("span", { className: "phase-value", children: phase === 'comeout' ? 'COME OUT' : `POINT — ${pointNumber}` })] }), _jsxs("div", { className: "dice-area", children: [_jsx(Dice, { value: die1, rolling: rolling }), _jsx(Dice, { value: die2, rolling: rolling })] }), _jsx("div", { className: `craps-message ${messageType}`, children: message }), _jsxs("div", { className: "craps-controls", children: [_jsxs("div", { className: "craps-bet-row", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "craps-bet-type", children: "Bet Type" }), _jsxs("select", { id: "craps-bet-type", value: betType, onChange: (e) => setBetType(e.target.value), disabled: phase === 'point' || rolling, children: [_jsx("option", { value: "pass", children: "Pass Line" }), _jsx("option", { value: "dontpass", children: "Don't Pass" })] })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "craps-bet-amount", children: "Bet Amount ($)" }), _jsx("input", { type: "number", id: "craps-bet-amount", min: 1, max: balance, value: betAmount, onChange: (e) => setBetAmount(Math.max(1, parseInt(e.target.value) || 1)), disabled: rolling })] })] }), _jsx(RollButton, { onRoll: rollDice, onReset: resetGame, disabled: balance <= 0, rolling: rolling })] }), recentHistory.length > 0 && (_jsxs("div", { className: "history-card", children: [_jsx("h3", { children: "Roll History" }), recentHistory.map((entry, i) => (_jsxs("div", { className: "history-item", children: [_jsxs("span", { children: ["[", entry.die1, "+", entry.die2, "] = ", entry.roll, ' ', "(", entry.betType === 'pass' ? 'Pass' : "Don't Pass", ")"] }), _jsx("span", { style: {
+                                                            color: entry.result === 'win'
+                                                                ? 'var(--color-green)'
+                                                                : entry.result === 'loss'
+                                                                    ? 'var(--color-red)'
+                                                                    : 'var(--text-muted)'
+                                                        }, children: entry.result === 'win' ? 'WIN' : entry.result === 'loss' ? 'LOSS' : '—' })] }, i)))] }))] }), _jsxs("div", { className: "craps-sidebar", children: [_jsxs("div", { className: "balance-display", children: [_jsx("div", { className: "balance-label", children: "Balance" }), _jsxs("div", { className: "balance-value", style: {
+                                                    color: balance > 1000
                                                         ? 'var(--color-green)'
-                                                        : entry.result === 'loss'
+                                                        : balance < 1000
                                                             ? 'var(--color-red)'
-                                                            : 'var(--text-muted)'
-                                                }, children: entry.result === 'win' ? 'WIN' : entry.result === 'loss' ? 'LOSS' : '—' })] }, i)))] }))] }), _jsxs("div", { className: "craps-sidebar", children: [_jsxs("div", { className: "balance-display", children: [_jsx("div", { className: "balance-label", children: "Balance" }), _jsxs("div", { className: "balance-value", style: {
-                                            color: balance > 1000
-                                                ? 'var(--color-green)'
-                                                : balance < 1000
-                                                    ? 'var(--color-red)'
-                                                    : 'var(--text-primary)'
-                                        }, children: ["$", balance.toLocaleString()] })] }), _jsx(StatsTable, { totalRolls: totalRolls, wins: wins, losses: losses, currentStreak: currentStreak, streakType: streakType })] })] })] }));
+                                                            : 'var(--text-primary)'
+                                                }, children: ["$", balance.toLocaleString()] })] }), _jsx(StatsTable, { totalRolls: totalRolls, wins: wins, losses: losses, currentStreak: currentStreak, streakType: streakType })] })] })] })] }));
 }
 export default CrapsGame;

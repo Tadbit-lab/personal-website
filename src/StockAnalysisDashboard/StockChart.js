@@ -43,7 +43,7 @@ function StockChart({ priceHistory }) {
                 bodyColor: '#888888',
                 borderColor: '#2a2a2a',
                 borderWidth: 1,
-                cornerRadius: 4,
+                cornerRadius: 0,
                 padding: 10,
             },
         },
@@ -51,8 +51,7 @@ function StockChart({ priceHistory }) {
             x: {
                 display: true,
                 grid: {
-                    color: '#222222',
-                    lineWidth: 0.5,
+                    display: false,
                 },
                 ticks: {
                     color: '#555555',
@@ -66,8 +65,7 @@ function StockChart({ priceHistory }) {
             y: {
                 display: true,
                 grid: {
-                    color: '#222222',
-                    lineWidth: 0.5,
+                    display: false,
                 },
                 ticks: {
                     color: '#555555',

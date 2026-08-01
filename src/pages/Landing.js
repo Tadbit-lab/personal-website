@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Link } from 'react-router-dom';
+function Landing() {
+    return (_jsxs("main", { className: "landing-page page-image", style: { backgroundImage: `url('${import.meta.env.BASE_URL}images/nice.jpg')` }, children: [_jsx("div", { className: "image-overlay" }), _jsxs("section", { className: "landing-content", "aria-labelledby": "landing-title", children: [_jsx("p", { className: "eyebrow", children: "PERSONAL SYSTEMS / 01" }), _jsx("h1", { id: "landing-title", children: "Personal Systems" }), _jsx("p", { className: "landing-subtitle", children: "Interactive simulations and financial dashboards." }), _jsxs("div", { className: "landing-actions", children: [_jsxs(Link, { className: "action-button", to: "/craps", children: ["Launch Craps Game ", _jsx("span", { "aria-hidden": "true", children: "\u2197" })] }), _jsxs(Link, { className: "action-button", to: "/dashboard", children: ["Open Stock Dashboard ", _jsx("span", { "aria-hidden": "true", children: "\u2197" })] })] })] }), _jsxs("div", { className: "landing-footer", children: [_jsx("span", { children: "TONILOBA ILESANMI" }), _jsx("span", { children: "EXPERIMENTAL PRODUCT SUITE" })] })] }));
+}
+export default Landing;

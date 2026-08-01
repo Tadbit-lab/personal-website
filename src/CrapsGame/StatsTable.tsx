@@ -64,6 +64,24 @@ const StatsTable: React.FC<StatsTableProps> = ({
           {streakDisplay}
         </span>
       </div>
+
+      <div style={{ marginTop: 'var(--gap-xl)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--gap-md)' }}>
+        <h3 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: 'var(--gap-md)' }}>Community Contributors</h3>
+        <div style={{ display: 'flex', gap: 'var(--gap-sm)', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <img src="/crapsgame/images/julian-paefgen-uxU_jyu9e7U-unsplash.jpg" alt="Julian" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Julian</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <img src="/crapsgame/images/nick-chong-N__BnvQ_w18-unsplash.jpg" alt="Nick" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Nick</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <img src="/crapsgame/images/robb-miller-FTjDQ1-KkU0-unsplash.jpg" alt="Robb" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Robb</span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

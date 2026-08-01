@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import Dice from './Dice'
 import StatsTable from './StatsTable'
 import RollButton from './RollButton'
@@ -50,6 +50,33 @@ function CrapsGame() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
   /* ===========================
+     AUDIO LOGIC
+     =========================== */
+  const diceSound = useRef<HTMLAudioElement | null>(null)
+  const winSound = useRef<HTMLAudioElement | null>(null)
+  const loseSound = useRef<HTMLAudioElement | null>(null)
+  const welcomeSound = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    diceSound.current = new Audio('/crapsgame/sounds/dice-roll.mp3')
+    winSound.current = new Audio('/crapsgame/sounds/win.mp3')
+    loseSound.current = new Audio('/crapsgame/sounds/lose.mp3')
+    welcomeSound.current = new Audio('/crapsgame/sounds/welcome.mp3')
+
+    // Play welcome on mount
+    welcomeSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e))
+  }, [])
+
+  const stopAllSounds = useCallback(() => {
+    [diceSound, winSound, loseSound, welcomeSound].forEach(ref => {
+      if (ref.current) {
+        ref.current.pause()
+        ref.current.currentTime = 0
+      }
+    })
+  }, [])
+
+  /* ===========================
      ROLL LOGIC — Accurate Craps Rules
      =========================== */
 
@@ -64,6 +91,10 @@ function CrapsGame() {
     }
 
     setRolling(true)
+    stopAllSounds()
+    if (diceSound.current) {
+      diceSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e))
+    }
 
     // Simulate roll delay
     setTimeout(() => {
@@ -162,23 +193,27 @@ function CrapsGame() {
      WIN / LOSS HANDLERS
      =========================== */
 
-  function handleWin(amount: number, msg: string) {
+  const handleWin = useCallback((amount: number, msg: string) => {
     setBalance(prev => prev + amount)
     setWins(prev => prev + 1)
     setMessage(msg)
     setMessageType('win')
     setCurrentStreak(prev => streakType === 'win' ? prev + 1 : 1)
     setStreakType('win')
-  }
+    stopAllSounds()
+    if (winSound.current) winSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e))
+  }, [streakType, stopAllSounds])
 
-  function handleLoss(amount: number, msg: string) {
+  const handleLoss = useCallback((amount: number, msg: string) => {
     setBalance(prev => prev - amount)
     setLosses(prev => prev + 1)
     setMessage(msg)
     setMessageType('lose')
     setCurrentStreak(prev => streakType === 'loss' ? prev + 1 : 1)
     setStreakType('loss')
-  }
+    stopAllSounds()
+    if (loseSound.current) loseSound.current.play().catch(e => console.error('Sound not found or autoplay prevented:', e))
+  }, [streakType, stopAllSounds])
 
   /* ===========================
      RESET
@@ -211,9 +246,21 @@ function CrapsGame() {
      =========================== */
 
   return (
-    <div className="craps-game">
-      {/* Header */}
-      <div className="craps-header">
+    <div className="craps-game-wrapper" style={{
+      backgroundImage: "url('/crapsgame/images/dice-on-craps-table-2260559.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative'
+    }}>
+      <div className="craps-overlay" style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        zIndex: 0
+      }}></div>
+      <div className="craps-game" style={{ position: 'relative', zIndex: 1 }}>
+        {/* Header */}
+        <div className="craps-header">
         <h1>Craps Simulator</h1>
         <p>Accurate Pass Line and Don&apos;t Pass rules</p>
       </div>
@@ -327,6 +374,7 @@ function CrapsGame() {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }

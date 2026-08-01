@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
- "scripts": {
+  "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "predeploy": "npm run build",
@@ -11,7 +11,6 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-
   "dependencies": {
     "chart.js": "^4.5.1",
     "gridstack": "^12.4.2",
@@ -20,6 +19,7 @@
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
     "react-loader-spinner": "^8.0.0",
+    "react-router-dom": "^7.18.2",
     "react-spinners": "^0.17.0"
   },
   "devDependencies": {
