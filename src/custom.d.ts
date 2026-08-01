@@ -21,6 +21,7 @@ declare module '*.mp3' {
 interface ImportMetaEnv {
   readonly BASE_URL: string
   readonly VITE_API_BASE_URL: string
+  readonly VITE_QUOTES_API_KEY?: string
 }
 
 interface ImportMeta {

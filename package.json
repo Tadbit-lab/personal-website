@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "chart.js": "^4.5.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-chart-financial": "^0.2.1",
     "gridstack": "^12.4.2",
     "numabbr": "^1.0.2",
     "react": "^19.2.0",

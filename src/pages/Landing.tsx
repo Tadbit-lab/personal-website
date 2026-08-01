@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import RandomQuoteGenerator from '../components/RandomQuoteGenerator'
 
 function Landing() {
   return (
@@ -13,6 +14,9 @@ function Landing() {
           <Link className="action-button" to="/dashboard">Open Stock Dashboard <span aria-hidden="true">↗</span></Link>
         </div>
       </section>
+      <div className="hero-quote">
+        <RandomQuoteGenerator />
+      </div>
       <div className="landing-footer"><span>TONILOBA ILESANMI</span><span>EXPERIMENTAL PRODUCT SUITE</span></div>
     </main>
   )
