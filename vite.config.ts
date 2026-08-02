@@ -1,17 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { createRequire } from 'node:module'
-import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const require = createRequire(import.meta.url)
-const financialEsm = require.resolve(
-  'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js'
-)
-const adapterMain = require.resolve('chartjs-adapter-date-fns')
-const adapterEsm = path.join(
-  path.dirname(adapterMain),
-  'chartjs-adapter-date-fns.esm.js'
-)
+// Resolve ESM bundle paths relative to this config file — works on any machine/CI
+const r = (p: string) => fileURLToPath(new URL(p, import.meta.url))
+
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,8 +12,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      'chartjs-chart-financial': financialEsm,
-      'chartjs-adapter-date-fns': adapterEsm,
+      'chartjs-chart-financial': r('./node_modules/chartjs-chart-financial/dist/chartjs-chart-financial.esm.js'),
+      'chartjs-adapter-date-fns': r('./node_modules/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.esm.js'),
     },
   },
   optimizeDeps: {
