@@ -1,9 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { createRequire } from 'node:module'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const require = createRequire(import.meta.url)
+const financialEsm = require.resolve(
+  'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js'
+)
+const adapterMain = require.resolve('chartjs-adapter-date-fns')
+const adapterEsm = path.join(
+  path.dirname(adapterMain),
+  'chartjs-adapter-date-fns.esm.js'
+)
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,14 +19,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      'chartjs-chart-financial': path.resolve(
-        __dirname,
-        'node_modules/chartjs-chart-financial/dist/chartjs-chart-financial.esm.js'
-      ),
-      'chartjs-adapter-date-fns': path.resolve(
-        __dirname,
-        'node_modules/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.esm.js'
-      ),
+      'chartjs-chart-financial': financialEsm,
+      'chartjs-adapter-date-fns': adapterEsm,
     },
   },
   optimizeDeps: {
