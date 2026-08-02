@@ -441,7 +441,7 @@ function Dashboard() {
             </section>
 
             <section className="dashboard-bottom-grid">
-              <article className="dashboard-panel">
+              <article className="dashboard-panel metrics-panel">
                 <div className="panel-heading compact">
                   <div>
                     <p className="eyebrow">METRICS</p>
@@ -464,7 +464,7 @@ function Dashboard() {
                 </div>
               </article>
 
-              <article className="dashboard-panel">
+              <article className="dashboard-panel range-panel">
                 <div className="panel-heading compact">
                   <div>
                     <p className="eyebrow">RANGE 52W</p>
@@ -483,7 +483,7 @@ function Dashboard() {
                 </div>
               </article>
 
-              <article className="dashboard-panel">
+              <article className="dashboard-panel profile-panel">
                 <div className="panel-heading compact">
                   <div>
                     <p className="eyebrow">COMPANY</p>
