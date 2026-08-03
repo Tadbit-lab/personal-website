@@ -528,6 +528,47 @@ button { cursor: pointer; }
   box-sizing: border-box;
 }
 .chart-wrap { height: 100%; width: 100%; min-height: 280px; box-sizing: border-box; }
+.main-chart { padding: 4px 0 0; }
+.chart-message { display: grid; place-items: center; color: #cbd5e1; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+
+.timeframe-selector {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+.timeframe-selector::-webkit-scrollbar { display: none; }
+.timeframe-selector button,
+.mobile-tab-strip button {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 4px;
+  color: #e2e8f0;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: .06em;
+  padding: 6px 9px;
+  white-space: nowrap;
+}
+.timeframe-selector button.active,
+.mobile-tab-strip button.active { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); color: #fff; }
+
+.kpi-panel { margin: 0; }
+.kpi-rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.kpi-ring { min-width: 0; position: relative; text-align: center; }
+.kpi-ring svg { display: block; height: 94px; margin: 0 auto; max-width: 100%; transform: rotate(-90deg); width: 94px; }
+.kpi-ring-track, .kpi-ring-value { fill: none; stroke-width: 4; }
+.kpi-ring-track { stroke: rgba(255,255,255,.12); }
+.kpi-ring-value { stroke: rgba(203,213,225,.72); stroke-linecap: round; transition: stroke-dashoffset .2s ease; }
+.kpi-ring > div { display: flex; flex-direction: column; gap: 2px; margin-top: -62px; min-height: 62px; }
+.kpi-ring strong { color: #fff; font-size: 13px; }
+.kpi-ring span { color: #e2e8f0; font-size: 10px; line-height: 1.2; }
+
+.word-cloud { align-content: center; display: flex; flex-wrap: wrap; gap: 10px 13px; justify-content: center; min-height: 170px; padding: 12px 4px; }
+.word-cloud span { color: #e2e8f0; line-height: 1; white-space: nowrap; }
+.employees-panel { min-height: 230px; }
+.dashboard-inline-error { color: #f8fafc; font-size: 12px; padding: 0 4px; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+.mobile-dashboard, .mobile-tab-strip, .mobile-tab-panel { display: none; }
 
 .stats-strip {
   display: grid;
@@ -733,50 +774,25 @@ button { cursor: pointer; }
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Single-column stacked order (<768px):
-     1. Chart
-     2. Watchlist
-     3. Metrics
-     4. News
-     5. Profile
-  */
-  .dashboard-grid,
-  .dashboard-bottom-grid {
-    display: contents;
+  .mobile-dashboard { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  .mobile-dashboard .dashboard-main-card { padding: 10px; gap: 10px; width: 100%; }
+  .mobile-tab-strip {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 6px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+    scrollbar-width: none;
   }
-
-  .dashboard-main-card {
-    order: 1;
-    padding: 10px;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .watchlist-column {
-    order: 2;
-    width: 100%;
-  }
-
-  .metrics-panel {
-    order: 3;
-    width: 100%;
-  }
-
-  .range-panel {
-    order: 4;
-    width: 100%;
-  }
-
-  .dashboard-news-card {
-    order: 5;
-    padding: 10px;
-    width: 100%;
-  }
-
-  .profile-panel {
-    order: 6;
-    width: 100%;
-  }
+  .mobile-tab-strip::-webkit-scrollbar { display: none; }
+  .mobile-tab-strip button { flex: 0 0 auto; text-transform: capitalize; }
+  .mobile-tab-panel { display: block; width: 100%; }
+  .mobile-tab-panel .dashboard-panel,
+  .mobile-tab-panel .dashboard-news-card { padding: 10px; width: 100%; }
+  .mobile-financials { display: grid; gap: 10px; }
 
   .dashboard-panel {
     padding: 10px;
@@ -815,6 +831,10 @@ button { cursor: pointer; }
     width: 100%;
     padding: 8px 10px;
   }
+
+  .kpi-rings { gap: 4px; }
+  .kpi-ring svg { height: 82px; width: 82px; }
+  .kpi-ring > div { margin-top: -55px; min-height: 55px; }
 }
 
 /* ── Responsive — Small Mobile (<=480px) ────────────────────── */
@@ -830,4 +850,3 @@ button { cursor: pointer; }
 /* ── Craps transparent panels ──────────────────────────────── */
 .craps-sidebar-new .balance-panel,
 .craps-sidebar-new .betting-panel { background: transparent; }
-
