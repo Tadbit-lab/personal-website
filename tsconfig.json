@@ -8,14 +8,14 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    "types": ["vite/client"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "allowImportingTsExtensions": false   // set to true only if you want to import with .tsx
+    "noUnusedParameters": true
   },
-  "include": ["src", "vite.config.ts", "StockAnalysisDashboard.tsx"],
+  "include": ["src", "vite.config.ts"],
   "exclude": ["node_modules"]
 }
