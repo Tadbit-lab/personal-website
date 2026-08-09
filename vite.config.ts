@@ -5,6 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/',
   plugins: [react()],
+  resolve: {
+    alias: {
+      'chartjs-chart-financial':
+        'chartjs-chart-financial/dist/chartjs-chart-financial.esm.js',
+    },
+  },
   server: {
     host: '127.0.0.1',
     port: 5173,
