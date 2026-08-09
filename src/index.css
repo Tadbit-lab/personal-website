@@ -13,6 +13,29 @@
   --panel: #171d1c;
   --teal: #63d6ad;
   --red: #e77676;
+
+  /* ── Stock Dashboard tokens ─────────────────────────────── */
+  --gap-xs:  4px;
+  --gap-sm:  8px;
+  --gap-md:  16px;
+  --gap-lg:  24px;
+  --gap-xl:  40px;
+  --radius:  10px;
+
+  --font-heading: 'Manrope', sans-serif;
+  --font-body:    'Manrope', sans-serif;
+
+  --accent-blue:    #2563EB;
+  --color-green:    #22c55e;
+  --color-red:      #ef4444;
+
+  --bg-card:        rgba(255, 255, 255, 0.04);
+  --border-color:   rgba(255, 255, 255, 0.09);
+  --border-subtle:  rgba(255, 255, 255, 0.05);
+
+  --text-primary:   #f2f0e9;
+  --text-secondary: #a8b4ae;
+  --text-muted:     #64736c;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
