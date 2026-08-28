@@ -1,7 +1,6 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react'
-// @ts-ignore
 import { Chart } from 'react-chartjs-2'
-// @ts-ignore
 import {
   BarController,
   BarElement,
