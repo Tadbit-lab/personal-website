@@ -354,18 +354,17 @@ const GraphView: React.FC<GraphViewProps> = ({
             <span className="card-value" style={{ color: '#e2e8f0' }}>{rangePct}%</span>
             <div
               className="range-meter-track"
-              style={{ position: 'relative', overflow: 'visible' }}
+              style={{ position: 'relative', overflow: 'visible', background: '#334155' }}
             >
               <div
                 style={{
                   position: 'absolute',
                   top: '-4px',
                   left: `${rangePct}%`,
-                  width: '14px',
-                  height: '14px',
+                  width: '12px',
+                  height: '12px',
                   borderRadius: '50%',
                   background: '#ffffff',
-                  boxShadow: '0 0 4px rgba(0,0,0,0.6)',
                   transform: 'translateX(-50%)',
                 }}
               />

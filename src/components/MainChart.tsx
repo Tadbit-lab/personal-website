@@ -212,14 +212,21 @@ function MainChart({ symbol, timeframe, onTrendCalculated }: MainChartProps) {
           label: 'Price',
           data: candles.map(({ c }) => c),
           yAxisID: 'price',
-          borderColor: '#e2e8f0',
+          borderColor: '#60a5fa',
           borderWidth: 2,
           pointRadius: 0,
           pointHoverRadius: 4,
-          pointHoverBackgroundColor: '#e2e8f0',
+          pointHoverBackgroundColor: '#60a5fa',
           pointHoverBorderColor: '#ffffff',
           pointHoverBorderWidth: 2,
-          fill: false,
+          fill: true,
+          backgroundColor: (context: any) => {
+            const ctx = context.chart.ctx
+            const gradient = ctx.createLinearGradient(0, 0, 0, 320)
+            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.10)')
+            gradient.addColorStop(1, 'rgba(96, 165, 250, 0.00)')
+            return gradient
+          },
           tension: 0.15,
         },
         {
