@@ -73,6 +73,7 @@ interface GraphViewProps {
 }
 
 const API = import.meta.env.VITE_API_BASE_URL
+const NA = <span style={{ color: '#6b7280' }}>n/a</span>
 
 const GraphView: React.FC<GraphViewProps> = ({
   symbol,
@@ -93,7 +94,7 @@ const GraphView: React.FC<GraphViewProps> = ({
     setHistoricalTrend({ isPositive, pctChange })
   }, [])
 
-  // Fetch Twelve Data technical indicators
+  // Fetch technical indicators
   useEffect(() => {
     let active = true
     setTechLoading(true)
@@ -115,14 +116,14 @@ const GraphView: React.FC<GraphViewProps> = ({
     }
   }, [symbol])
 
-  // Inference derived from HISTORICAL chart trend and Twelve Data technicals
+  // Inference derived from chart trend and technicals
   const inference = useMemo(() => {
     const isUp = historicalTrend?.isPositive ?? (currentQuote?.percent_change ?? 0) >= 0
     const absChange = Math.abs(historicalTrend?.pctChange ?? currentQuote?.percent_change ?? 0)
 
     let trend = technicals?.signals?.trend || 'Neutral / Consolidation'
     let volatility = 'Moderate Volatility'
-    let interpretation = 'Price is consolidating around moving average support. Key volume patterns suggest institutional accumulation.'
+    let interpretation = 'Price is consolidating around key moving averages. Volume indicates steady liquidity.'
 
     if (absChange > 30) {
       trend = isUp ? 'Strong Bullish Expansion' : 'Strong Bearish Selloff'
@@ -156,6 +157,21 @@ const GraphView: React.FC<GraphViewProps> = ({
     return Math.max(0, Math.min(100, Math.round(pct)))
   }, [fiftyTwoWeek, price])
 
+  const sma50 = technicals?.moving_averages?.sma_50
+  const sma200 = technicals?.moving_averages?.sma_200
+
+  // Golden cross badge
+  const goldenCrossBadge = useMemo(() => {
+    if (sma50 != null && sma200 != null) {
+      if (sma50 > sma200) {
+        return <span className="badge-pill badge-bullish">ACTIVE</span>
+      } else if (sma50 < sma200) {
+        return <span className="badge-pill badge-bearish">ACTIVE</span>
+      }
+    }
+    return <span className="badge-pill badge-neutral">NONE</span>
+  }, [sma50, sma200])
+
   return (
     <div className="graph-view-panel">
       <article className="dashboard-main-card">
@@ -166,8 +182,12 @@ const GraphView: React.FC<GraphViewProps> = ({
               {symbol} Historical Chart
               {historicalTrend && (
                 <span
-                  className={historicalTrend.isPositive ? 'text-green' : 'text-red'}
-                  style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '0.02em' }}
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    letterSpacing: '0.02em',
+                    color: historicalTrend.isPositive ? '#22c55e' : '#ef4444',
+                  }}
                 >
                   {historicalTrend.isPositive ? '+' : ''}{signFormatter.format(historicalTrend.pctChange)}%
                   <span style={{ fontWeight: 400, opacity: 0.65, fontSize: '12px', marginLeft: '4px' }}>({timeframe})</span>
@@ -175,7 +195,7 @@ const GraphView: React.FC<GraphViewProps> = ({
               )}
             </h2>
           </div>
-          <span className="muted-text">USD • TWELVE DATA LAYER</span>
+          <span className="muted-text">USD • REAL-TIME</span>
         </div>
 
         <div className="chart-card">
@@ -198,39 +218,51 @@ const GraphView: React.FC<GraphViewProps> = ({
         <div className="stats-strip">
           <div>
             <span className="muted-text">Open</span>
-            <strong>{currentQuote?.open ? currencyFormatter.format(currentQuote.open) : '—'}</strong>
+            <strong>{currentQuote?.open ? currencyFormatter.format(currentQuote.open) : NA}</strong>
           </div>
           <div>
             <span className="muted-text">High</span>
-            <strong>{currentQuote?.high ? currencyFormatter.format(currentQuote.high) : '—'}</strong>
+            <strong>{currentQuote?.high ? currencyFormatter.format(currentQuote.high) : NA}</strong>
           </div>
           <div>
             <span className="muted-text">Low</span>
-            <strong>{currentQuote?.low ? currencyFormatter.format(currentQuote.low) : '—'}</strong>
+            <strong>{currentQuote?.low ? currencyFormatter.format(currentQuote.low) : NA}</strong>
           </div>
           <div>
             <span className="muted-text">Prev Close</span>
-            <strong>{currentQuote?.previous_close ? currencyFormatter.format(currentQuote.previous_close) : '—'}</strong>
+            <strong>{currentQuote?.previous_close ? currencyFormatter.format(currentQuote.previous_close) : NA}</strong>
           </div>
         </div>
       </article>
 
-      {/* Twelve Data Technical Indicators Report */}
+      {/* Technical Indicators & Multi-Timeframe Signals */}
       <article className="dashboard-panel technicals-panel">
         <div className="panel-heading compact">
           <div>
-            <p className="eyebrow">TWELVE DATA METRICS</p>
-            <h2>Technical Indicators & Multi-Timeframe Signals</h2>
+            <p className="eyebrow">TECHNICAL INDICATORS</p>
+            <h2>Key Indicators & Multi-Period Returns</h2>
           </div>
-          <span className="muted-text">{techLoading ? 'Syncing indicators…' : 'LIVE COMPUTED'}</span>
+          <span className="muted-text">{techLoading ? 'Syncing…' : 'LIVE'}</span>
         </div>
 
         <div className="technicals-grid">
           {/* RSI (14) */}
           <div className="technical-card">
             <span className="card-label">RSI (14)</span>
-            <div className="card-value">
-              {technicals?.rsi_14 != null ? technicals.rsi_14.toFixed(1) : '—'}
+            <div
+              className="card-value"
+              style={{
+                color:
+                  technicals?.rsi_14 != null
+                    ? technicals.rsi_14 < 30
+                      ? '#22c55e'
+                      : technicals.rsi_14 > 70
+                      ? '#ef4444'
+                      : '#9ca3af'
+                    : '#9ca3af',
+              }}
+            >
+              {technicals?.rsi_14 != null ? technicals.rsi_14.toFixed(1) : NA}
             </div>
             <div className="card-subtext">
               <span
@@ -250,13 +282,23 @@ const GraphView: React.FC<GraphViewProps> = ({
           {/* MACD */}
           <div className="technical-card">
             <span className="card-label">MACD (12, 26, 9)</span>
-            <div className="card-value">
+            <div
+              className="card-value"
+              style={{
+                color:
+                  technicals?.macd?.histogram != null
+                    ? technicals.macd.histogram > 0
+                      ? '#22c55e'
+                      : '#ef4444'
+                    : '#f8fafc',
+              }}
+            >
               {technicals?.macd?.histogram != null ? (
-                <span className={technicals.macd.histogram >= 0 ? 'text-green' : 'text-red'}>
-                  {technicals.macd.histogram >= 0 ? '+' : ''}{technicals.macd.histogram.toFixed(2)}
+                <span>
+                  {technicals.macd.histogram > 0 ? '+' : ''}{technicals.macd.histogram.toFixed(2)}
                 </span>
               ) : (
-                '—'
+                NA
               )}
             </div>
             <div className="card-subtext">
@@ -269,37 +311,69 @@ const GraphView: React.FC<GraphViewProps> = ({
           {/* SMA 50 / 200 */}
           <div className="technical-card">
             <span className="card-label">Moving Averages</span>
-            <div className="card-value" style={{ fontSize: '15px' }}>
-              SMA50: {technicals?.moving_averages?.sma_50 ? currencyFormatter.format(technicals.moving_averages.sma_50) : '—'}
+            <div
+              className="card-value"
+              style={{
+                fontSize: '14px',
+                color: sma50 != null ? (price >= sma50 ? '#22c55e' : '#ef4444') : '#f8fafc',
+              }}
+            >
+              SMA50: {sma50 != null ? currencyFormatter.format(sma50) : NA}
             </div>
-            <div className="card-subtext">
-              SMA200: {technicals?.moving_averages?.sma_200 ? currencyFormatter.format(technicals.moving_averages.sma_200) : '—'}
+            <div
+              className="card-subtext"
+              style={{
+                color: sma200 != null ? (price >= sma200 ? '#22c55e' : '#ef4444') : '#9ca3af',
+              }}
+            >
+              SMA200: {sma200 != null ? currencyFormatter.format(sma200) : NA}
             </div>
           </div>
 
           {/* 52-Week Range */}
           <div className="technical-card">
             <span className="card-label">52-Week Range</span>
-            <div className="range-meter-track">
-              <div className="range-meter-fill" style={{ width: `${rangePct}%` }} />
+            <div className="range-meter-track" style={{ background: 'linear-gradient(to right, #ef4444, #eab308, #22c55e)', position: 'relative', height: '6px', borderRadius: '99px', margin: '8px 0 4px' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  left: `${rangePct}%`,
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  boxShadow: '0 0 4px rgba(0,0,0,0.6)',
+                  transform: 'translateX(-50%)',
+                }}
+              />
             </div>
             <div className="card-subtext" style={{ justifyContent: 'space-between' }}>
-              <span>{fiftyTwoWeek?.low ? currencyFormatter.format(fiftyTwoWeek.low) : '—'}</span>
+              <span>{fiftyTwoWeek?.low ? currencyFormatter.format(fiftyTwoWeek.low) : NA}</span>
               <strong style={{ color: '#e2e8f0' }}>{rangePct}%</strong>
-              <span>{fiftyTwoWeek?.high ? currencyFormatter.format(fiftyTwoWeek.high) : '—'}</span>
+              <span>{fiftyTwoWeek?.high ? currencyFormatter.format(fiftyTwoWeek.high) : NA}</span>
             </div>
           </div>
 
           {/* Volume Analysis */}
           <div className="technical-card">
             <span className="card-label">Volume Analysis</span>
-            <div className="card-value" style={{ fontSize: '15px' }}>
-              {technicals?.volume ? compactFormatter.format(technicals.volume) : '—'}
+            <div
+              className="card-value"
+              style={{
+                fontSize: '14px',
+                color: (technicals?.volume_ratio ?? 1) >= 1 ? '#22c55e' : '#ef4444',
+              }}
+            >
+              {technicals?.volume ? compactFormatter.format(technicals.volume) : NA}
             </div>
             <div className="card-subtext">
-              Avg: {technicals?.average_volume ? compactFormatter.format(technicals.average_volume) : '—'}
+              Avg: {technicals?.average_volume ? compactFormatter.format(technicals.average_volume) : NA}
               {technicals?.volume_ratio != null && (
-                <span className="badge-pill badge-neutral" style={{ marginLeft: 'auto' }}>
+                <span
+                  className={`badge-pill ${technicals.volume_ratio >= 1 ? 'badge-bullish' : 'badge-bearish'}`}
+                  style={{ marginLeft: 'auto' }}
+                >
                   {technicals.volume_ratio}x avg
                 </span>
               )}
@@ -308,7 +382,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         </div>
 
         {/* Multi-Period Historical Performance Table */}
-        <div style={{ marginTop: '4px' }}>
+        <div className="historical-table-container" style={{ marginTop: '6px', height: '180px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
           <span className="card-label" style={{ display: 'block', marginBottom: '4px' }}>
             Historical Performance
           </span>
@@ -324,30 +398,28 @@ const GraphView: React.FC<GraphViewProps> = ({
             </thead>
             <tbody>
               <tr>
-                <td className={(technicals?.returns?.return_1m ?? 0) >= 0 ? 'text-green' : 'text-red'}>
+                <td style={{ color: technicals?.returns?.return_1m != null ? (technicals.returns.return_1m >= 0 ? '#22c55e' : '#ef4444') : '#9ca3af' }}>
                   {technicals?.returns?.return_1m != null
                     ? `${technicals.returns.return_1m >= 0 ? '+' : ''}${technicals.returns.return_1m}%`
-                    : '—'}
+                    : NA}
                 </td>
-                <td className={(technicals?.returns?.return_3m ?? 0) >= 0 ? 'text-green' : 'text-red'}>
+                <td style={{ color: technicals?.returns?.return_3m != null ? (technicals.returns.return_3m >= 0 ? '#22c55e' : '#ef4444') : '#9ca3af' }}>
                   {technicals?.returns?.return_3m != null
                     ? `${technicals.returns.return_3m >= 0 ? '+' : ''}${technicals.returns.return_3m}%`
-                    : '—'}
+                    : NA}
                 </td>
-                <td className={(technicals?.returns?.return_6m ?? 0) >= 0 ? 'text-green' : 'text-red'}>
+                <td style={{ color: technicals?.returns?.return_6m != null ? (technicals.returns.return_6m >= 0 ? '#22c55e' : '#ef4444') : '#9ca3af' }}>
                   {technicals?.returns?.return_6m != null
                     ? `${technicals.returns.return_6m >= 0 ? '+' : ''}${technicals.returns.return_6m}%`
-                    : '—'}
+                    : NA}
                 </td>
-                <td className={(technicals?.returns?.return_1y ?? 0) >= 0 ? 'text-green' : 'text-red'}>
+                <td style={{ color: technicals?.returns?.return_1y != null ? (technicals.returns.return_1y >= 0 ? '#22c55e' : '#ef4444') : '#9ca3af' }}>
                   {technicals?.returns?.return_1y != null
                     ? `${technicals.returns.return_1y >= 0 ? '+' : ''}${technicals.returns.return_1y}%`
-                    : '—'}
+                    : NA}
                 </td>
                 <td>
-                  <span className={`badge-pill ${technicals?.signals?.golden_cross ? 'badge-bullish' : 'badge-neutral'}`}>
-                    {technicals?.signals?.golden_cross ? 'Active (Bullish)' : 'None'}
-                  </span>
+                  {goldenCrossBadge}
                 </td>
               </tr>
             </tbody>
@@ -367,23 +439,28 @@ const GraphView: React.FC<GraphViewProps> = ({
             <div className="inference-item">
               <span className="muted-text">Historical Trend</span>
               <strong
-                className={
-                  inference.trend.includes('Bullish') || inference.trend.includes('Mild Bullish')
-                    ? 'text-green'
-                    : inference.trend.includes('Bearish') || inference.trend.includes('Mild Bearish')
-                    ? 'text-red'
-                    : ''
-                }
+                style={{
+                  color:
+                    inference.trend.includes('Bullish') || inference.trend.includes('Mild Bullish')
+                      ? '#22c55e'
+                      : inference.trend.includes('Bearish') || inference.trend.includes('Mild Bearish')
+                      ? '#ef4444'
+                      : '#cbd5e1',
+                }}
               >
                 {historicalTrend ? inference.trend : 'Loading chart…'}
               </strong>
             </div>
             <div className="inference-item">
               <span className="muted-text">Period Return</span>
-              <strong className={historicalTrend?.isPositive ? 'text-green' : historicalTrend ? 'text-red' : ''}>
+              <strong
+                style={{
+                  color: historicalTrend ? (historicalTrend.isPositive ? '#22c55e' : '#ef4444') : '#cbd5e1',
+                }}
+              >
                 {historicalTrend
                   ? `${historicalTrend.isPositive ? '+' : ''}${signFormatter.format(historicalTrend.pctChange)}%`
-                  : '—'}
+                  : NA}
               </strong>
             </div>
             <div className="inference-item">
@@ -392,10 +469,14 @@ const GraphView: React.FC<GraphViewProps> = ({
             </div>
             <div className="inference-item">
               <span className="muted-text">Daily Change</span>
-              <strong className={(currentQuote?.percent_change ?? 0) >= 0 ? 'text-green' : 'text-red'}>
+              <strong
+                style={{
+                  color: (currentQuote?.percent_change ?? 0) >= 0 ? '#22c55e' : '#ef4444',
+                }}
+              >
                 {currentQuote?.percent_change != null
                   ? `${currentQuote.percent_change >= 0 ? '+' : ''}${signFormatter.format(currentQuote.percent_change)}%`
-                  : '—'}
+                  : NA}
               </strong>
             </div>
           </div>

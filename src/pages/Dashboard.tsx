@@ -126,8 +126,15 @@ function Dashboard() {
                 </form>
                 <div className="topbar-price">
                   <span className="topbar-label">LAST PRICE</span>
-                  <strong>{currentQuote ? currencyFormatter.format(currentQuote.current_price) : '—'}</strong>
-                  <span className={`change-pill ${isPositive ? 'positive' : 'negative'}`}>{currentQuote ? `${isPositive ? '+' : ''}${compactFormatter.format(quoteChange)}%` : '—'}</span>
+                  <strong style={{ fontSize: '36px', fontWeight: 700, color: '#ffffff', lineHeight: 1.1 }}>
+                    {currentQuote ? currencyFormatter.format(currentQuote.current_price) : <span style={{ color: '#6b7280' }}>n/a</span>}
+                  </strong>
+                  <span
+                    className={`change-pill ${isPositive ? 'positive' : 'negative'}`}
+                    style={{ fontSize: '16px', fontWeight: 600, color: isPositive ? '#22c55e' : '#ef4444' }}
+                  >
+                    {currentQuote ? `${isPositive ? '+' : ''}${compactFormatter.format(quoteChange)}%` : <span style={{ color: '#6b7280' }}>n/a</span>}
+                  </span>
                 </div>
               </div>
             </section>
@@ -214,6 +221,25 @@ function Dashboard() {
                 </div>
               </div>
             )}
+            <div
+              style={{
+                fontSize: '11px',
+                color: '#6b7280',
+                textAlign: 'right',
+                padding: '12px 4px 4px',
+                fontFamily: 'Inter, system-ui, sans-serif',
+              }}
+            >
+              {(() => {
+                const now = new Date()
+                const y = now.getFullYear()
+                const m = String(now.getMonth() + 1).padStart(2, '0')
+                const d = String(now.getDate()).padStart(2, '0')
+                const hh = String(now.getHours()).padStart(2, '0')
+                const mm = String(now.getMinutes()).padStart(2, '0')
+                return `Updated: ${y}-${m}-${d} ${hh}:${mm} ET`
+              })()}
+            </div>
           </div>
         </div>
       </div>

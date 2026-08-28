@@ -1235,121 +1235,62 @@ button { cursor: pointer; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Twelve Data Technical Indicators & Analytics Cards */
+/* Dashboard Typography, Spacing, and Stability Specifications */
 
-.technicals-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 14px;
+body, button, input, select, textarea {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
 }
 
-.technicals-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+* {
+  font-variant-numeric: tabular-nums;
 }
 
-.technical-card {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 8px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.dashboard-main-card,
+.dashboard-panel,
+.dashboard-news-card {
+  border: 1px solid #334155 !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
-.technical-card .card-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
+.panel-heading p.eyebrow {
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #9ca3af !important;
+  margin: 0 0 4px 0 !important;
 }
 
-.technical-card .card-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: #f8fafc;
-  font-family: 'DM Mono', monospace;
+.chart-card,
+.chart-wrap.main-chart {
+  height: 320px !important;
+  min-height: 320px !important;
+  max-height: 320px !important;
+  position: relative !important;
+  will-change: transform !important;
+  contain: layout style !important;
 }
 
-.technical-card .card-subtext {
-  font-size: 11.5px;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.historical-table-container {
+  height: 180px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #334155 transparent !important;
 }
 
-.badge-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.historical-table-container::-webkit-scrollbar {
+  width: 6px;
 }
 
-.badge-bullish {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.badge-bearish {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.badge-neutral {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-.range-meter-track {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 99px;
-  position: relative;
-  overflow: hidden;
-  margin: 6px 0 2px;
-}
-
-.range-meter-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+.historical-table-container::-webkit-scrollbar-thumb {
+  background-color: #334155;
   border-radius: 99px;
 }
 
-.returns-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 6px;
+.historical-table-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.returns-table th {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #64748b;
-  text-align: left;
-  padding: 4px 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.returns-table td {
-  font-size: 12.5px;
-  font-family: 'DM Mono', monospace;
-  padding: 6px 6px;
-  color: #f1f5f9;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
 
 

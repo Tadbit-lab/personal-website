@@ -1,9 +1,8 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
-import { BarController, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip, } from 'chart.js';
-import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
-ChartJS.register(BarController, BarElement, CategoryScale, CandlestickController, CandlestickElement, Legend, LinearScale, Tooltip);
+import { BarController, BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineController, LineElement, PointElement, Tooltip, } from 'chart.js';
+ChartJS.register(LineController, LineElement, PointElement, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip, Filler);
 const API = import.meta.env.VITE_API_BASE_URL;
 const ranges = {
     '1D': { resolution: 'D', days: 5 },
@@ -44,6 +43,35 @@ function normalize(payload) {
     })
         .filter(({ h, l, c }) => h || l || c);
 }
+// Crosshair Plugin
+const crosshairPlugin = {
+    id: 'customCrosshair',
+    afterDraw: (chart) => {
+        if (chart.tooltip?._active && chart.tooltip._active.length) {
+            const ctx = chart.ctx;
+            const activePoint = chart.tooltip._active[0];
+            const x = activePoint.element.x;
+            const y = activePoint.element.y;
+            const topY = chart.scales.price.top;
+            const bottomY = chart.scales.price.bottom;
+            const leftX = chart.scales.x.left;
+            const rightX = chart.scales.price.left;
+            ctx.save();
+            ctx.beginPath();
+            ctx.setLineDash([3, 3]);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#475569';
+            // Vertical crosshair
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            // Horizontal crosshair
+            ctx.moveTo(leftX, y);
+            ctx.lineTo(rightX, y);
+            ctx.stroke();
+            ctx.restore();
+        }
+    },
+};
 function MainChart({ symbol, timeframe, onTrendCalculated }) {
     const [candles, setCandles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -93,48 +121,197 @@ function MainChart({ symbol, timeframe, onTrendCalculated }) {
         const pctChange = ((lastClose - firstClose) / firstClose) * 100;
         onTrendCalculated(lastClose >= firstClose, pctChange);
     }, [candles, onTrendCalculated]);
-    const data = useMemo(() => ({
-        labels: candles.map(({ label }) => label),
-        datasets: [
-            {
-                type: 'candlestick',
-                label: 'Price',
-                data: candles.map(({ x, o, h, l, c }) => ({ x, o, h, l, c })),
-                yAxisID: 'price',
-                color: {
-                    up: '#22c55e',
-                    down: '#ef4444',
-                    unchanged: '#8b9296'
-                }
+    // Calculate SMA50 and SMA200 lines
+    const { sma50Data, sma200Data } = useMemo(() => {
+        const closes = candles.map((c) => c.c);
+        const sma50 = [];
+        const sma200 = [];
+        for (let i = 0; i < closes.length; i++) {
+            if (i >= 49) {
+                const slice = closes.slice(i - 49, i + 1);
+                sma50.push(Number((slice.reduce((a, b) => a + b, 0) / 50).toFixed(2)));
+            }
+            else {
+                // Linear approximation / partial average for visibility
+                const slice = closes.slice(0, i + 1);
+                sma50.push(Number((slice.reduce((a, b) => a + b, 0) / slice.length).toFixed(2)));
+            }
+            if (i >= 199) {
+                const slice = closes.slice(i - 199, i + 1);
+                sma200.push(Number((slice.reduce((a, b) => a + b, 0) / 200).toFixed(2)));
+            }
+            else {
+                const slice = closes.slice(0, i + 1);
+                sma200.push(Number((slice.reduce((a, b) => a + b, 0) / slice.length).toFixed(2)));
+            }
+        }
+        return { sma50Data: sma50, sma200Data: sma200 };
+    }, [candles]);
+    const data = useMemo(() => {
+        return {
+            labels: candles.map(({ label }) => label),
+            datasets: [
+                {
+                    type: 'line',
+                    label: 'Price',
+                    data: candles.map(({ c }) => c),
+                    yAxisID: 'price',
+                    borderColor: '#60a5fa',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    pointHoverBackgroundColor: '#60a5fa',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2,
+                    fill: true,
+                    backgroundColor: (context) => {
+                        const ctx = context.chart.ctx;
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+                        gradient.addColorStop(0, 'rgba(96, 165, 250, 0.10)');
+                        gradient.addColorStop(1, 'rgba(96, 165, 250, 0.00)');
+                        return gradient;
+                    },
+                    tension: 0.15,
+                },
+                {
+                    type: 'line',
+                    label: 'SMA 50',
+                    data: sma50Data,
+                    yAxisID: 'price',
+                    borderColor: '#f59e0b',
+                    borderWidth: 1,
+                    borderDash: [4, 4],
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.1,
+                },
+                {
+                    type: 'line',
+                    label: 'SMA 200',
+                    data: sma200Data,
+                    yAxisID: 'price',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    borderDash: [4, 4],
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.1,
+                },
+                {
+                    type: 'bar',
+                    label: 'Volume',
+                    data: candles.map(({ v }) => v),
+                    yAxisID: 'volume',
+                    backgroundColor: 'rgba(148, 163, 184, 0.30)',
+                    borderWidth: 0,
+                    barPercentage: 0.85,
+                    categoryPercentage: 1,
+                },
+            ],
+        };
+    }, [candles, sma50Data, sma200Data]);
+    const options = useMemo(() => {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
             },
-            {
-                type: 'bar',
-                label: 'Volume',
-                data: candles.map(({ x, v }) => ({ x, y: v })),
-                yAxisID: 'volume',
-                backgroundColor: 'rgba(203, 213, 225, .16)',
-                borderWidth: 0,
-                barPercentage: .9,
-                categoryPercentage: 1
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        boxWidth: 12,
+                        boxHeight: 2,
+                        color: '#9ca3af',
+                        font: { size: 10, family: 'Inter, sans-serif' },
+                        filter: (legendItem) => legendItem.text !== 'Volume',
+                    },
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#f9fafb',
+                    bodyColor: '#cbd5e1',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    titleFont: { size: 12, weight: 600, family: 'Inter, sans-serif' },
+                    bodyFont: { size: 11, family: 'DM Mono, monospace' },
+                    callbacks: {
+                        label: (context) => {
+                            const index = context.dataIndex;
+                            const candle = candles[index];
+                            if (!candle || context.dataset.label !== 'Price')
+                                return '';
+                            return [
+                                `Open:   $${candle.o.toFixed(2)}`,
+                                `High:   $${candle.h.toFixed(2)}`,
+                                `Low:    $${candle.l.toFixed(2)}`,
+                                `Close:  $${candle.c.toFixed(2)}`,
+                                `Volume: ${new Intl.NumberFormat('en-US', { notation: 'compact' }).format(candle.v)}`,
+                            ];
+                        },
+                    },
+                },
             },
-        ],
-    }), [candles]);
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        parsing: false,
-        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-        scales: {
-            x: { type: 'category', grid: { color: 'rgba(255,255,255,.045)' }, ticks: { color: '#cbd5e1', maxTicksLimit: 6, maxRotation: 0 } },
-            price: { type: 'linear', position: 'right', grid: { color: 'rgba(255,255,255,.07)' }, ticks: { color: '#cbd5e1', maxTicksLimit: 5 } },
-            volume: { type: 'linear', position: 'left', display: false, grid: { display: false }, beginAtZero: true },
-        },
-    };
+            scales: {
+                x: {
+                    type: 'category',
+                    grid: {
+                        color: '#1e293b',
+                        lineWidth: 1,
+                    },
+                    border: {
+                        dash: [4, 4],
+                        color: '#1e293b',
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        font: { size: 11, family: 'Inter, sans-serif' },
+                        maxTicksLimit: 6,
+                        maxRotation: 0,
+                    },
+                },
+                price: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: {
+                        color: '#1e293b',
+                        lineWidth: 1,
+                    },
+                    border: {
+                        dash: [4, 4],
+                        color: '#1e293b',
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        font: { size: 11, family: 'DM Mono, monospace' },
+                        maxTicksLimit: 6,
+                        callback: (value) => `$${Number(value).toFixed(2)}`,
+                    },
+                },
+                volume: {
+                    type: 'linear',
+                    position: 'left',
+                    display: false,
+                    grid: { display: false },
+                    beginAtZero: true,
+                    // Push volume bars to bottom 25% of chart
+                    max: Math.max(...candles.map((c) => c.v), 1) * 4,
+                },
+            },
+        };
+    }, [candles]);
     if (loading)
         return _jsx("div", { className: "chart-wrap chart-message", children: "Loading historical data\u2026" });
     if (error || !candles.length)
-        return _jsx("div", { className: "chart-wrap chart-message", children: error ?? 'No chart data available.' });
-    return _jsx("div", { className: "chart-wrap main-chart", children: _jsx(Chart, { type: "bar", data: data, options: options }) });
+        return _jsx("div", { className: "chart-wrap chart-message", children: _jsx("span", { style: { color: '#6b7280' }, children: "n/a" }) });
+    return (_jsx("div", { className: "chart-wrap main-chart", children: _jsx(Chart, { type: "line", data: data, options: options, plugins: [crosshairPlugin] }) }));
 }
 export default MainChart;
