@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Chart } from 'react-chartjs-2'
+import type { ChartData, ChartOptions } from 'chart.js'
 import {
   BarController,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
-  ChartData,
-  ChartOptions,
   Filler,
   Legend,
   LinearScale,
