@@ -1,6 +1,8 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from 'react';
+// @ts-ignore
 import { Chart } from 'react-chartjs-2';
+// @ts-ignore
 import { BarController, BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineController, LineElement, PointElement, Tooltip, } from 'chart.js';
 ChartJS.register(LineController, LineElement, PointElement, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip, Filler);
 const API = import.meta.env.VITE_API_BASE_URL;
