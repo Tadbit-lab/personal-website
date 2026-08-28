@@ -249,7 +249,7 @@ const GraphView: React.FC<GraphViewProps> = ({
           {/* RSI (14) */}
           <div className="technical-card">
             <span className="card-label">RSI (14)</span>
-            <div
+            <span
               className="card-value"
               style={{
                 color:
@@ -263,7 +263,7 @@ const GraphView: React.FC<GraphViewProps> = ({
               }}
             >
               {technicals?.rsi_14 != null ? technicals.rsi_14.toFixed(1) : NA}
-            </div>
+            </span>
             <div className="card-subtext">
               <span
                 className={`badge-pill ${
@@ -279,10 +279,10 @@ const GraphView: React.FC<GraphViewProps> = ({
             </div>
           </div>
 
-          {/* MACD */}
+          {/* MACD Histogram */}
           <div className="technical-card">
-            <span className="card-label">MACD (12, 26, 9)</span>
-            <div
+            <span className="card-label">MACD Hist.</span>
+            <span
               className="card-value"
               style={{
                 color:
@@ -290,17 +290,13 @@ const GraphView: React.FC<GraphViewProps> = ({
                     ? technicals.macd.histogram > 0
                       ? '#22c55e'
                       : '#ef4444'
-                    : '#f8fafc',
+                    : '#9ca3af',
               }}
             >
-              {technicals?.macd?.histogram != null ? (
-                <span>
-                  {technicals.macd.histogram > 0 ? '+' : ''}{technicals.macd.histogram.toFixed(2)}
-                </span>
-              ) : (
-                NA
-              )}
-            </div>
+              {technicals?.macd?.histogram != null
+                ? `${technicals.macd.histogram > 0 ? '+' : ''}${technicals.macd.histogram.toFixed(2)}`
+                : NA}
+            </span>
             <div className="card-subtext">
               <span className={`badge-pill ${technicals?.macd?.status?.includes('Bullish') ? 'badge-bullish' : 'badge-neutral'}`}>
                 {technicals?.macd?.status || 'Neutral'}
@@ -308,32 +304,58 @@ const GraphView: React.FC<GraphViewProps> = ({
             </div>
           </div>
 
-          {/* SMA 50 / 200 */}
+          {/* SMA 50 */}
           <div className="technical-card">
-            <span className="card-label">Moving Averages</span>
-            <div
+            <span className="card-label">SMA 50</span>
+            <span
               className="card-value"
-              style={{
-                fontSize: '14px',
-                color: sma50 != null ? (price >= sma50 ? '#22c55e' : '#ef4444') : '#f8fafc',
-              }}
+              style={{ color: sma50 != null ? (price >= sma50 ? '#22c55e' : '#ef4444') : '#9ca3af' }}
             >
-              SMA50: {sma50 != null ? currencyFormatter.format(sma50) : NA}
-            </div>
-            <div
-              className="card-subtext"
-              style={{
-                color: sma200 != null ? (price >= sma200 ? '#22c55e' : '#ef4444') : '#9ca3af',
-              }}
+              {sma50 != null ? currencyFormatter.format(sma50) : NA}
+            </span>
+          </div>
+
+          {/* SMA 200 */}
+          <div className="technical-card">
+            <span className="card-label">SMA 200</span>
+            <span
+              className="card-value"
+              style={{ color: sma200 != null ? (price >= sma200 ? '#22c55e' : '#ef4444') : '#9ca3af' }}
             >
-              SMA200: {sma200 != null ? currencyFormatter.format(sma200) : NA}
+              {sma200 != null ? currencyFormatter.format(sma200) : NA}
+            </span>
+          </div>
+
+          {/* Volume */}
+          <div className="technical-card">
+            <span className="card-label">Volume</span>
+            <span
+              className="card-value"
+              style={{ color: (technicals?.volume_ratio ?? 1) >= 1 ? '#22c55e' : '#ef4444' }}
+            >
+              {technicals?.volume ? compactFormatter.format(technicals.volume) : NA}
+            </span>
+            <div className="card-subtext">
+              Avg: {technicals?.average_volume ? compactFormatter.format(technicals.average_volume) : NA}
+              {technicals?.volume_ratio != null && (
+                <span
+                  className={`badge-pill ${technicals.volume_ratio >= 1 ? 'badge-bullish' : 'badge-bearish'}`}
+                  style={{ marginLeft: 'auto' }}
+                >
+                  {technicals.volume_ratio}x avg
+                </span>
+              )}
             </div>
           </div>
 
-          {/* 52-Week Range */}
-          <div className="technical-card">
+          {/* 52-Week Range — spans full width */}
+          <div className="technical-card" style={{ gridColumn: '1 / -1' }}>
             <span className="card-label">52-Week Range</span>
-            <div className="range-meter-track" style={{ background: 'linear-gradient(to right, #ef4444, #eab308, #22c55e)', position: 'relative', height: '6px', borderRadius: '99px', margin: '8px 0 4px' }}>
+            <span className="card-value" style={{ color: '#e2e8f0' }}>{rangePct}%</span>
+            <div
+              className="range-meter-track"
+              style={{ position: 'relative', overflow: 'visible' }}
+            >
               <div
                 style={{
                   position: 'absolute',
@@ -348,35 +370,9 @@ const GraphView: React.FC<GraphViewProps> = ({
                 }}
               />
             </div>
-            <div className="card-subtext" style={{ justifyContent: 'space-between' }}>
-              <span>{fiftyTwoWeek?.low ? currencyFormatter.format(fiftyTwoWeek.low) : NA}</span>
-              <strong style={{ color: '#e2e8f0' }}>{rangePct}%</strong>
-              <span>{fiftyTwoWeek?.high ? currencyFormatter.format(fiftyTwoWeek.high) : NA}</span>
-            </div>
-          </div>
-
-          {/* Volume Analysis */}
-          <div className="technical-card">
-            <span className="card-label">Volume Analysis</span>
-            <div
-              className="card-value"
-              style={{
-                fontSize: '14px',
-                color: (technicals?.volume_ratio ?? 1) >= 1 ? '#22c55e' : '#ef4444',
-              }}
-            >
-              {technicals?.volume ? compactFormatter.format(technicals.volume) : NA}
-            </div>
-            <div className="card-subtext">
-              Avg: {technicals?.average_volume ? compactFormatter.format(technicals.average_volume) : NA}
-              {technicals?.volume_ratio != null && (
-                <span
-                  className={`badge-pill ${technicals.volume_ratio >= 1 ? 'badge-bullish' : 'badge-bearish'}`}
-                  style={{ marginLeft: 'auto' }}
-                >
-                  {technicals.volume_ratio}x avg
-                </span>
-              )}
+            <div className="card-subtext" style={{ justifyContent: 'space-between', gridColumn: '1 / -1' }}>
+              <span style={{ color: '#9ca3af' }}>Low: {fiftyTwoWeek?.low ? currencyFormatter.format(fiftyTwoWeek.low) : NA}</span>
+              <span style={{ color: '#9ca3af' }}>High: {fiftyTwoWeek?.high ? currencyFormatter.format(fiftyTwoWeek.high) : NA}</span>
             </div>
           </div>
         </div>

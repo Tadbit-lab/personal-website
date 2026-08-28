@@ -1169,6 +1169,170 @@ button { cursor: pointer; }
   color: #e2e8f0;
 }
 
+/* Technical Indicators Panel */
+
+.technicals-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 12px 16px;
+}
+
+.technicals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+}
+
+.technical-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  column-gap: 24px;
+  row-gap: 2px;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e293b;
+  line-height: 1.6;
+}
+
+.technical-card .card-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.technical-card .card-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f9fafb;
+  font-family: 'DM Mono', 'Menlo', monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.technical-card .card-subtext {
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  line-height: 1.6;
+}
+
+/* Range Meter */
+.range-meter-track {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to right, #ef4444, #eab308, #22c55e);
+  border-radius: 99px;
+  position: relative;
+  margin: 6px 0 4px;
+  grid-column: 1 / -1;
+}
+
+.range-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #eab308, #22c55e);
+  border-radius: 99px;
+}
+
+/* Badges */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge-bullish {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.badge-bearish {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.badge-neutral {
+  background: rgba(148, 163, 184, 0.12);
+  color: #9ca3af;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+/* Historical Returns Table */
+.historical-table-container {
+  height: 180px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+
+.historical-table-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.historical-table-container::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 99px;
+}
+
+.historical-table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.returns-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+.returns-table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9ca3af;
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.returns-table td {
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  padding: 7px 8px;
+  color: #f9fafb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  line-height: 1.6;
+}
+
+/* Section label (card-label standalone) */
+.card-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9ca3af;
+}
+
 /* Responsive Overrides & Mobile Tabs */
 
 @media (max-width: 1024px) {
