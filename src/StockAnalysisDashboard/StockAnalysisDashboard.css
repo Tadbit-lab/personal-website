@@ -1,5 +1,7 @@
 .stock-dashboard {
   min-height: calc(100vh - 52px);
+  /* fallback */
+  min-height: calc(100svh - 52px);
   padding: var(--gap-lg);
 }
 
@@ -10,6 +12,8 @@
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 120px);
+  /* fallback */
+  min-height: calc(100svh - 120px);
   gap: var(--gap-lg);
   text-align: center;
 }
@@ -173,10 +177,7 @@
 
 .stock-spinner-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
