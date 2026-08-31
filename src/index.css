@@ -14,7 +14,6 @@
   --teal: #63d6ad;
   --red: #e77676;
 
-  /* ── Stock Dashboard tokens ─────────────────────────────── */
   --gap-xs: 4px;
   --gap-sm: 8px;
   --gap-md: 16px;
@@ -36,12 +35,9 @@
   --text-primary: #f2f0e9;
   --text-secondary: #a8b4ae;
   --text-muted: #64736c;
-
-  /* Dynamic viewport height (set by JS if enabled, fallback to dvh/svh/vh) */
-  --app-height: 100dvh;
 }
 
-/* ── Reset & Native Scroll Engine Activation ────────────────── */
+/* ── Reset — SCROLL MUST WORK ──────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -49,8 +45,10 @@
 }
 
 html {
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -58,17 +56,20 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  height: auto;
   width: 100%;
   background: #101414;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  /* never lock page scroll */
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
 }
 
 #root {
   min-height: 100%;
+  height: auto;
   width: 100%;
+  overflow: visible;
 }
 
 button,
@@ -96,7 +97,6 @@ button {
   isolation: isolate;
 }
 
-/* Overlay: solid translucent — no blur, no gradient */
 .image-overlay,
 .hero-overlay {
   position: absolute;
@@ -106,7 +106,6 @@ button {
   pointer-events: none;
 }
 
-/* ── Shared typography helpers ─────────────────────────────── */
 .eyebrow {
   color: var(--teal);
   font: 500 11px/1.2 'DM Mono', monospace;
@@ -513,10 +512,13 @@ button {
 }
 
 /* ── Dashboard layout ──────────────────────────────────────── */
+/* IMPORTANT: min-height only — do NOT set height + overflow:hidden */
 .dashboard-page {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
+  height: auto;
+  overflow: visible;
   color: #f8fafc;
   width: 100%;
   position: relative;
@@ -526,12 +528,13 @@ button {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
+  height: auto;
+  overflow: visible;
   width: 100%;
   position: relative;
   isolation: isolate;
 }
 
-/* Stable background: Eliminates mobile parallax scrolling zoom bugs */
 .dashboard-container::before {
   content: "";
   position: fixed;
@@ -545,11 +548,12 @@ button {
   -webkit-transform: translateZ(0);
 }
 
-/* Adjusted darkness tint to brighten the background image while keeping text clear */
 .dashboard-overlay {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
+  height: auto;
+  overflow: visible;
   background: rgba(16, 20, 20, 0.42);
   width: 100%;
 }
@@ -563,11 +567,21 @@ button {
   flex-direction: column;
   gap: 12px;
   box-sizing: border-box;
+  overflow: visible;
 }
 
-/* ── Search dropdown containment (prevents layout push on scroll) ── */
+/* Search dropdown overlays content — does not grow page height */
 .dashboard-search {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .dashboard-search .suggestions,
@@ -580,7 +594,8 @@ button {
   z-index: 60;
   max-height: min(50dvh, 320px);
   overflow-y: auto;
-  background: rgba(20, 24, 24, 0.95);
+  -webkit-overflow-scrolling: touch;
+  background: rgba(20, 24, 24, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
   backdrop-filter: blur(12px);
@@ -603,6 +618,7 @@ button {
   box-sizing: border-box;
   position: relative;
   z-index: 30;
+  overflow: visible;
 }
 
 .topbar-symbol-row {
@@ -631,18 +647,7 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.dashboard-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px;
-  border: 1px solid rgba(255, 255, 255, .16);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  position: relative;
 }
 
 .dashboard-search input {
@@ -973,7 +978,6 @@ button {
   font-size: 14px;
 }
 
-/* Watchlist panel — overrides for dashboard context */
 .watchlist-panel {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, .16);
@@ -1043,7 +1047,6 @@ button {
   color: #ffffff;
 }
 
-/* ── Animations ────────────────────────────────────────────── */
 @keyframes dice-roll {
   0% {
     transform: rotate(-3deg) translateY(0);
@@ -1058,13 +1061,10 @@ button {
   }
 }
 
-/* ── Craps transparent panels ──────────────────────────────── */
 .craps-sidebar-new .balance-panel,
 .craps-sidebar-new .betting-panel {
   background: transparent;
 }
-
-/* ── Stock Dashboard Dual-View Layout ────────────────────── */
 
 .desktop-dashboard-layout {
   display: grid;
@@ -1151,8 +1151,6 @@ button {
   box-shadow: none;
 }
 
-/* Right Main Panel Layouts */
-
 .desktop-main-content {
   display: flex;
   flex-direction: column;
@@ -1174,15 +1172,11 @@ button {
   align-items: start;
 }
 
-/* Graph View Panels */
-
 .graph-view-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
-/* Inference Engine styling */
 
 .inference-panel {
   padding: 16px;
@@ -1238,8 +1232,6 @@ button {
   color: #e77676 !important;
 }
 
-/* Company Info View Panels */
-
 .company-info-panel {
   display: flex;
   flex-direction: column;
@@ -1279,8 +1271,6 @@ button {
   stroke: #e77676;
 }
 
-/* Trend Sparklines */
-
 .trends-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1303,8 +1293,6 @@ button {
   height: 100%;
   display: block;
 }
-
-/* Valuation Table & Profile Summary */
 
 .info-bottom-grid {
   display: grid;
@@ -1354,8 +1342,6 @@ button {
   font-size: 11px;
   color: #e2e8f0;
 }
-
-/* Technical Indicators Panel */
 
 .technicals-panel {
   display: flex;
@@ -1414,7 +1400,6 @@ button {
   line-height: 1.6;
 }
 
-/* Range Meter */
 .range-meter-track {
   width: 100%;
   height: 6px;
@@ -1431,7 +1416,6 @@ button {
   border-radius: 99px;
 }
 
-/* Badges */
 .badge-pill {
   display: inline-flex;
   align-items: center;
@@ -1462,7 +1446,6 @@ button {
   border: 1px solid rgba(148, 163, 184, 0.28);
 }
 
-/* Historical Returns Table */
 .historical-table-container {
   height: 180px;
   overflow-y: auto;
@@ -1497,7 +1480,6 @@ button {
   line-height: 1.6;
 }
 
-/* Section label (card-label standalone) */
 .card-label {
   font-size: 12px;
   font-weight: 600;
@@ -1522,8 +1504,6 @@ button {
   }
 }
 
-/* Dashboard Typography, Spacing, and Stability Specifications */
-
 body,
 button,
 input,
@@ -1537,7 +1517,6 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
-/* Beautiful frosted-glass card elements with translucent dark background */
 .dashboard-main-card,
 .dashboard-panel,
 .dashboard-news-card {
@@ -1563,8 +1542,6 @@ textarea {
   min-height: 320px !important;
   max-height: 320px !important;
   position: relative !important;
-  will-change: transform !important;
-  contain: layout style !important;
 }
 
 .historical-table-container {
@@ -1587,12 +1564,10 @@ textarea {
   background: transparent;
 }
 
-
 /* =========================================================================
-   CONSOLIDATED RESPONSIVE MEDIA QUERIES (Cascades Correctly over Desktop)
+   RESPONSIVE
    ========================================================================= */
 
-/* ── Tablet / Small Laptop Viewports (768px – 1024px) ────────────────────── */
 @media (max-width: 1024px) {
   .desktop-dashboard-layout {
     grid-template-columns: 220px 1fr;
@@ -1625,10 +1600,9 @@ textarea {
   }
 }
 
-/* ── Portrait Mobile Viewports (Mobile & Small Tablets) (<768px) ────────── */
 @media (max-width: 767.98px) {
 
-  /* Prevent iOS input zoom (which causes viewport resize jumps) */
+  /* Stop iOS zoom on focus (viewport jump) — still allow page scroll */
   input,
   select,
   textarea,
@@ -1636,25 +1610,30 @@ textarea {
     font-size: 16px !important;
   }
 
-  /* Mobile shell: lock outer scrolling, allow inner panel scroll */
   html,
-  body {
+  body,
+  #root {
     overflow-x: hidden;
-    overscroll-behavior-y: contain;
+    overflow-y: auto !important;
+    height: auto !important;
+    max-height: none !important;
   }
 
   .dashboard-page,
   .dashboard-container,
-  .dashboard-overlay {
-    min-height: var(--app-height, 100dvh);
+  .dashboard-overlay,
+  .dashboard-shell,
+  .mobile-dashboard,
+  .mobile-tab-panel {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
-  /* Layout Fallback Override */
   .desktop-dashboard-layout {
     display: none !important;
   }
 
-  /* Nav Adjustments */
   .product-nav {
     padding: 0 14px;
   }
@@ -1668,7 +1647,6 @@ textarea {
     display: none;
   }
 
-  /* Landing Pages Scaling */
   .landing-page {
     padding: 60px 16px 120px;
   }
@@ -1697,7 +1675,6 @@ textarea {
     padding: 12px 16px;
   }
 
-  /* Craps Game Scaling */
   .craps-layout-new {
     display: block;
     padding: 24px 14px;
@@ -1712,9 +1689,8 @@ textarea {
     padding: 14px;
   }
 
-  /* Mobile Dashboard Shell & Topbar Structure */
   .dashboard-shell {
-    padding: 10px 12px 16px;
+    padding: 10px 12px 24px;
     gap: 10px;
     display: flex;
     flex-direction: column;
@@ -1727,8 +1703,8 @@ textarea {
     align-items: stretch;
     gap: 10px;
     padding: 10px 12px;
-    position: sticky;
-    top: 0;
+    /* sticky is optional; does NOT lock body scroll */
+    position: relative;
     z-index: 40;
   }
 
@@ -1750,7 +1726,6 @@ textarea {
     flex: 1;
   }
 
-  /* Mobile dropdown containment — never pushes layout on scroll */
   .dashboard-search .suggestions,
   .dashboard-search [role="listbox"],
   .dashboard-search .search-dropdown {
@@ -1773,7 +1748,6 @@ textarea {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Mobile Navigation Strips */
   .mobile-dashboard {
     display: flex !important;
     flex-direction: column;
@@ -1787,7 +1761,6 @@ textarea {
     width: 100%;
   }
 
-  /* Frosted Translucent Mobile Tab Navigation Strip */
   .mobile-tab-strip {
     display: flex !important;
     gap: 6px;
@@ -1799,9 +1772,8 @@ textarea {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
     scrollbar-width: none;
-    position: sticky;
-    top: 60px;
-    z-index: 30;
+    position: relative;
+    z-index: 20;
   }
 
   .mobile-tab-strip::-webkit-scrollbar {
@@ -1863,7 +1835,6 @@ textarea {
     padding: 6px 8px;
   }
 
-  /* Watchlists Fit Standard Mobile Widths */
   .watchlist-panel {
     border: 1px solid rgba(255, 255, 255, .16);
     padding: 10px 0;
@@ -1883,7 +1854,6 @@ textarea {
     padding: 8px 10px;
   }
 
-  /* KPI Rings Override: Fits 2 columns on small screens without stretching */
   .kpi-rings {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
@@ -1899,7 +1869,6 @@ textarea {
     min-height: 55px;
   }
 
-  /* Company Profile Mobile Grid Restructuring */
   .trends-grid {
     grid-template-columns: 1fr !important;
   }
@@ -1909,7 +1878,6 @@ textarea {
   }
 }
 
-/* ── Small Mobile Phones Viewports (<=480px) ───────────────────────── */
 @media (max-width: 480px) {
   .dashboard-topbar {
     padding: 8px 10px;
