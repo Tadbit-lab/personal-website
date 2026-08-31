@@ -5,10 +5,6 @@ import RollButton from './RollButton'
 import { init as initDiceRoller, rollTwo } from '../dice/DiceRoller'
 import './CrapsGame.css'
 
-/* ===========================
-   TYPES
-   =========================== */
-
 type BetType = 'pass' | 'dontpass'
 type Phase = 'comeout' | 'point'
 type MessageType = 'neutral' | 'win' | 'lose' | 'point'
@@ -17,47 +13,40 @@ interface HistoryEntry {
   roll: number
   die1: number
   die2: number
-  result: 'win' | 'loss' | 'point'
+  result: 'win' | 'loss' | 'point' | 'push'
   betType: BetType
 }
 
-/* ===========================
-   COMPONENT
-   =========================== */
-
 function CrapsGame() {
-  // Dice state
   const [die1, setDie1] = useState(1)
   const [die2, setDie2] = useState(1)
   const [rolling, setRolling] = useState(false)
   const [is3DReady, setIs3DReady] = useState(false)
 
-  // Game state
   const [phase, setPhase] = useState<Phase>('comeout')
   const [pointNumber, setPointNumber] = useState<number | null>(null)
   const [betType, setBetType] = useState<BetType>('pass')
   const [betAmount, setBetAmount] = useState(10)
   const [balance, setBalance] = useState(1000)
 
-  // Stats
   const [totalRolls, setTotalRolls] = useState(0)
   const [wins, setWins] = useState(0)
   const [losses, setLosses] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
   const [streakType, setStreakType] = useState<'win' | 'loss' | 'none'>('none')
 
-  // UI
   const [message, setMessage] = useState('Place your bet and roll the dice.')
   const [messageType, setMessageType] = useState<MessageType>('neutral')
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
-  /* ===========================
-     AUDIO LOGIC
-     =========================== */
   const diceSound = useRef<HTMLAudioElement | null>(null)
   const winSound = useRef<HTMLAudioElement | null>(null)
   const loseSound = useRef<HTMLAudioElement | null>(null)
   const welcomeSound = useRef<HTMLAudioElement | null>(null)
+
+  // Synchronous locks to prevent sound double firing
+  const isRollingActive = useRef(false)
+  const welcomePlayed = useRef(false)
 
   useEffect(() => {
     diceSound.current = new Audio('/crapsgame/sounds/dice-roll.mp3')
@@ -65,18 +54,18 @@ function CrapsGame() {
     loseSound.current = new Audio('/crapsgame/sounds/lose.mp3')
     welcomeSound.current = new Audio('/crapsgame/sounds/welcome.mp3')
 
-    welcomeSound.current.play().catch((e) => console.error('Sound play error:', e))
+    if (!welcomePlayed.current) {
+      welcomeSound.current.play().catch(() => undefined)
+      welcomePlayed.current = true
+    }
 
-    // Init 3D dice after mount so #dice-container-crapsgame exists
     let cancelled = false
     const timer = window.setTimeout(() => {
       initDiceRoller('#dice-container-crapsgame')
         .then((box) => {
           if (!cancelled && box && box.renderer) {
             setIs3DReady(true)
-            console.log('[CrapsGame] 3D dice ready')
           } else if (!cancelled) {
-            console.warn('[CrapsGame] 3D dice not ready — using 2D fallback')
             setIs3DReady(false)
           }
         })
@@ -101,10 +90,6 @@ function CrapsGame() {
     })
   }, [])
 
-  /* ===========================
-     WIN / LOSS HANDLERS
-     =========================== */
-
   const handleWin = useCallback(
     (amount: number, msg: string) => {
       setBalance((prev) => prev + amount)
@@ -114,7 +99,7 @@ function CrapsGame() {
       setCurrentStreak((prev) => (streakType === 'win' ? prev + 1 : 1))
       setStreakType('win')
       stopAllSounds()
-      if (winSound.current) winSound.current.play().catch((e) => console.error('Sound error:', e))
+      if (winSound.current) winSound.current.play().catch(() => undefined)
     },
     [streakType, stopAllSounds]
   )
@@ -128,17 +113,13 @@ function CrapsGame() {
       setCurrentStreak((prev) => (streakType === 'loss' ? prev + 1 : 1))
       setStreakType('loss')
       stopAllSounds()
-      if (loseSound.current) loseSound.current.play().catch((e) => console.error('Sound error:', e))
+      if (loseSound.current) loseSound.current.play().catch(() => undefined)
     },
     [streakType, stopAllSounds]
   )
 
-  /* ===========================
-     ROLL LOGIC
-     =========================== */
-
   const rollDice = useCallback(async () => {
-    if (rolling) return
+    if (isRollingActive.current || rolling) return
 
     const clampedBet = Math.max(1, Math.min(betAmount, balance))
     if (clampedBet > balance || balance <= 0) {
@@ -147,33 +128,31 @@ function CrapsGame() {
       return
     }
 
+    isRollingActive.current = true
     setRolling(true)
     stopAllSounds()
+
     if (diceSound.current) {
-      diceSound.current.play().catch((e) => console.error('Sound error:', e))
+      diceSound.current.play().catch(() => undefined)
     }
 
     const d1 = Math.floor(Math.random() * 6) + 1
     const d2 = Math.floor(Math.random() * 6) + 1
 
-    // Always try 3D first; if engine is ready it will animate
     try {
       await rollTwo(d1, d2, '#dice-container-crapsgame')
-      // If rollTwo succeeded and box exists, mark 3D ready
       setIs3DReady(true)
     } catch (err) {
-      console.warn('[CrapsGame] 3D roll failed, 2D fallback:', err)
+      console.warn('[CrapsGame] 3D roll failed, using 2D fallback')
       await new Promise((resolve) => setTimeout(resolve, 800))
     }
 
     const total = d1 + d2
-
     setDie1(d1)
     setDie2(d2)
     setTotalRolls((prev) => prev + 1)
-    setRolling(false)
 
-    let rollResult: 'win' | 'loss' | 'point' = 'point'
+    let rollResult: 'win' | 'loss' | 'point' | 'push' = 'point'
 
     if (phase === 'comeout') {
       if (total === 7 || total === 11) {
@@ -197,22 +176,22 @@ function CrapsGame() {
           rollResult = 'loss'
           handleLoss(clampedBet, `Craps 12. Pass Line loses.`)
         } else {
-          rollResult = 'point'
-          setMessage(`Rolled 12. Don't Pass pushes (tie). Roll again.`)
-          setMessageType('point')
+          rollResult = 'push'
+          setMessage(`Rolled 12. Don't Pass pushes (tie). Bet returned.`)
+          setMessageType('neutral')
         }
       } else {
         rollResult = 'point'
         setPointNumber(total)
         setPhase('point')
-        setMessage(`Point is ${total}. Roll again to hit it (or 7 out).`)
+        setMessage(`Point set to ${total}. Roll it again before rolling a 7.`)
         setMessageType('point')
       }
     } else {
       if (total === pointNumber) {
         if (betType === 'pass') {
           rollResult = 'win'
-          handleWin(clampedBet, `Hit the point ${total}! Pass Line wins.`)
+          handleWin(clampedBet, `Hit point ${total}! Pass Line wins.`)
         } else {
           rollResult = 'loss'
           handleLoss(clampedBet, `Point ${total} hit. Don't Pass loses.`)
@@ -222,16 +201,16 @@ function CrapsGame() {
       } else if (total === 7) {
         if (betType === 'pass') {
           rollResult = 'loss'
-          handleLoss(clampedBet, `Seven out! Pass Line loses.`)
+          handleLoss(clampedBet, `Seven Out! Pass Line loses.`)
         } else {
           rollResult = 'win'
-          handleWin(clampedBet, `Seven out! Don't Pass wins.`)
+          handleWin(clampedBet, `Seven Out! Don't Pass wins.`)
         }
         setPhase('comeout')
         setPointNumber(null)
       } else {
         rollResult = 'point'
-        setMessage(`Rolled ${total}. Point is still ${pointNumber}. Roll again.`)
+        setMessage(`Rolled ${total}. Point remains ${pointNumber}.`)
         setMessageType('neutral')
       }
     }
@@ -248,6 +227,9 @@ function CrapsGame() {
         ...prev,
       ].slice(0, 50)
     )
+
+    setRolling(false)
+    isRollingActive.current = false
   }, [
     rolling,
     betAmount,
@@ -274,6 +256,7 @@ function CrapsGame() {
     setMessage('Place your bet and roll the dice.')
     setMessageType('neutral')
     setHistory([])
+    isRollingActive.current = false
   }, [])
 
   const recentHistory = useMemo(() => history.slice(0, 20), [history])
@@ -283,21 +266,10 @@ function CrapsGame() {
       className="craps-game-wrapper"
       style={{
         backgroundImage: "url('/crapsgame/images/dice-on-craps-table-2260559.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        position: 'relative',
       }}
     >
-      <div
-        className="craps-overlay"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          zIndex: 0,
-        }}
-      />
-      <div className="craps-game" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="craps-overlay" />
+      <div className="craps-game">
         <div className="craps-header">
           <h1>Craps Simulator</h1>
           <p>Accurate Pass Line and Don&apos;t Pass rules</p>
@@ -312,23 +284,7 @@ function CrapsGame() {
               </span>
             </div>
 
-            {/* 3D dice canvas mounts here. 2D only shows until 3D is ready. */}
-            <div
-              id="dice-container-crapsgame"
-              style={{
-                position: 'relative',
-                width: '100%',
-                height: '280px',
-                margin: '8px 0',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '24px',
-                background: 'rgba(0,0,0,0.15)',
-              }}
-            >
+            <div id="dice-container-crapsgame" className="dice-container-crapsgame">
               {!is3DReady && (
                 <>
                   <Dice value={die1} rolling={rolling} />
@@ -370,7 +326,7 @@ function CrapsGame() {
               <RollButton
                 onRoll={rollDice}
                 onReset={resetGame}
-                disabled={balance <= 0}
+                disabled={balance <= 0 || rolling}
                 rolling={rolling}
               />
             </div>
@@ -385,6 +341,7 @@ function CrapsGame() {
                       {entry.betType === 'pass' ? 'Pass' : "Don't Pass"})
                     </span>
                     <span
+                      className={`history-status-${entry.result}`}
                       style={{
                         color:
                           entry.result === 'win'
@@ -394,7 +351,13 @@ function CrapsGame() {
                               : 'var(--text-muted)',
                       }}
                     >
-                      {entry.result === 'win' ? 'WIN' : entry.result === 'loss' ? 'LOSS' : '—'}
+                      {entry.result === 'win'
+                        ? 'WIN'
+                        : entry.result === 'loss'
+                          ? 'LOSS'
+                          : entry.result === 'push'
+                            ? 'PUSH'
+                            : '—'}
                     </span>
                   </div>
                 ))}

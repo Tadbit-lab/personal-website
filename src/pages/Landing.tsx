@@ -29,7 +29,7 @@ function Landing() {
       </div>
 
       <footer className="landing-footer">
-        <span>TONILOBA ILESANMI</span>
+        <span>TABIT-LABs</span>
       </footer>
     </main>
   )
