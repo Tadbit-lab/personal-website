@@ -30,7 +30,6 @@ function Landing() {
 
       <footer className="landing-footer">
         <span>TONILOBA ILESANMI</span>
-        <span>EXPERIMENTAL PRODUCT SUITE</span>
       </footer>
     </main>
   )

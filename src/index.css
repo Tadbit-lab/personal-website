@@ -36,6 +36,9 @@
   --text-primary: #f2f0e9;
   --text-secondary: #a8b4ae;
   --text-muted: #64736c;
+
+  /* Dynamic viewport height (set by JS if enabled, fallback to dvh/svh/vh) */
+  --app-height: 100dvh;
 }
 
 /* ── Reset & Native Scroll Engine Activation ────────────────── */
@@ -59,9 +62,8 @@ body {
   background: #101414;
   overflow-x: hidden;
   overflow-y: auto;
-  /* Restores standard browser wheel and trackpad scroll */
   -webkit-overflow-scrolling: touch;
-  /* Restores smooth inertia scrolling on iOS */
+  overscroll-behavior-y: contain;
 }
 
 #root {
@@ -87,6 +89,7 @@ button {
 .page-image {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   background-position: center;
   background-size: cover;
   position: relative;
@@ -118,6 +121,7 @@ button {
   padding: 80px 32px 120px;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -512,13 +516,16 @@ button {
 .dashboard-page {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   color: #f8fafc;
   width: 100%;
+  position: relative;
 }
 
 .dashboard-container {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
   position: relative;
   isolation: isolate;
@@ -542,6 +549,7 @@ button {
 .dashboard-overlay {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   background: rgba(16, 20, 20, 0.42);
   width: 100%;
 }
@@ -557,6 +565,29 @@ button {
   box-sizing: border-box;
 }
 
+/* ── Search dropdown containment (prevents layout push on scroll) ── */
+.dashboard-search {
+  position: relative;
+}
+
+.dashboard-search .suggestions,
+.dashboard-search [role="listbox"],
+.dashboard-search .search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  max-height: min(50dvh, 320px);
+  overflow-y: auto;
+  background: rgba(20, 24, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
 .dashboard-topbar {
   display: flex;
   justify-content: space-between;
@@ -570,6 +601,8 @@ button {
   -webkit-backdrop-filter: blur(12px);
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  z-index: 30;
 }
 
 .topbar-symbol-row {
@@ -1595,6 +1628,27 @@ textarea {
 /* ── Portrait Mobile Viewports (Mobile & Small Tablets) (<768px) ────────── */
 @media (max-width: 767.98px) {
 
+  /* Prevent iOS input zoom (which causes viewport resize jumps) */
+  input,
+  select,
+  textarea,
+  .dashboard-search input {
+    font-size: 16px !important;
+  }
+
+  /* Mobile shell: lock outer scrolling, allow inner panel scroll */
+  html,
+  body {
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+  }
+
+  .dashboard-page,
+  .dashboard-container,
+  .dashboard-overlay {
+    min-height: var(--app-height, 100dvh);
+  }
+
   /* Layout Fallback Override */
   .desktop-dashboard-layout {
     display: none !important;
@@ -1673,6 +1727,9 @@ textarea {
     align-items: stretch;
     gap: 10px;
     padding: 10px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
   }
 
   .topbar-actions {
@@ -1680,15 +1737,31 @@ textarea {
     align-items: stretch;
     gap: 8px;
     width: 100%;
+    position: relative;
   }
 
   .dashboard-search {
     width: 100%;
+    position: relative;
   }
 
   .dashboard-search input {
     width: 100%;
     flex: 1;
+  }
+
+  /* Mobile dropdown containment — never pushes layout on scroll */
+  .dashboard-search .suggestions,
+  .dashboard-search [role="listbox"],
+  .dashboard-search .search-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: min(45dvh, 260px);
+    overflow-y: auto;
+    z-index: 100;
+    -webkit-overflow-scrolling: touch;
   }
 
   .topbar-price {
@@ -1726,6 +1799,9 @@ textarea {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
     scrollbar-width: none;
+    position: sticky;
+    top: 60px;
+    z-index: 30;
   }
 
   .mobile-tab-strip::-webkit-scrollbar {
