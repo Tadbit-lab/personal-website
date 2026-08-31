@@ -369,7 +369,7 @@
 }
 
 /* ==========================================================================
-   Wrapper / Felt / Dice containers (Craps page + CrapsGame)
+   Wrapper / Felt / Dice containers
    ========================================================================== */
 
 .craps-game-wrapper {
@@ -410,12 +410,43 @@
   pointer-events: none;
 }
 
+/* ==========================================================================
+   Table header (title + How to Play + POINT)
+   ========================================================================== */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.table-header>div:first-child {
+  min-width: 0;
+  /* allow title to shrink instead of shoving controls off-screen */
+  flex: 1 1 auto;
+}
+
+.table-header h1 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .table-header-rules-group {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
   flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+.point-display {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -423,7 +454,6 @@
    ========================================================================== */
 
 .rules-button {
-  /* Critical: never stretch in flex/grid parents */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -455,7 +485,6 @@
   transform: scale(0.98);
 }
 
-/* Dual label: full vs short */
 .rules-button .rules-button-short {
   display: none;
 }
@@ -490,8 +519,6 @@
   color: #e8f0ec;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Hide scrollbar, keep scroll */
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -655,11 +682,15 @@
    Responsive
    ========================================================================== */
 
-/* ---- iPad portrait / small tablets (768–1024) ---- */
+/* ---- iPad / tablet (768–1024) ---- */
 @media (min-width: 768px) and (max-width: 1024px) {
   .craps-layout {
     grid-template-columns: 1fr 260px;
     gap: var(--gap-md);
+  }
+
+  .table-header {
+    gap: 12px;
   }
 
   .table-header-rules-group {
@@ -722,13 +753,29 @@
     width: 100%;
   }
 
-  /* Header group: full row, button does NOT stretch */
+  /*
+    KEY FIX: stack header so title is on its own row,
+    then How to Play + POINT share the next row fully visible.
+  */
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .table-header>div:first-child {
+    flex: none;
+    width: 100%;
+  }
+
   .table-header-rules-group {
     width: 100%;
+    display: flex;
     flex-wrap: nowrap;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     gap: 8px;
+    flex: none;
   }
 
   .rules-button {
@@ -742,6 +789,11 @@
     letter-spacing: 0.3px;
     border-radius: 6px;
     min-height: 40px;
+  }
+
+  .point-display {
+    flex: 0 0 auto;
+    margin-left: auto;
   }
 
   .rules-modal-overlay {
@@ -797,6 +849,14 @@
     padding: var(--gap-md);
   }
 
+  .table-header {
+    gap: 10px;
+  }
+
+  .table-header-rules-group {
+    gap: 8px;
+  }
+
   .rules-button {
     width: auto !important;
     max-width: max-content;
@@ -805,7 +865,6 @@
     min-height: 40px;
   }
 
-  /* Optional short label if you use both spans in JSX */
   .rules-button .rules-button-full {
     display: none;
   }
@@ -833,7 +892,7 @@
   }
 }
 
-/* ---- Touch devices (phones + iPads): better tap targets ---- */
+/* ---- Touch devices ---- */
 @media (hover: none) and (pointer: coarse) {
   .rules-button {
     width: auto !important;
