@@ -497,6 +497,17 @@
   color: #e8f0ec;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Hides scrollbar visual across all browsers */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.rules-modal-container::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 .rules-close-button {
