@@ -35,6 +35,13 @@
   --text-primary: #f2f0e9;
   --text-secondary: #a8b4ae;
   --text-muted: #64736c;
+
+  /*
+    Stable viewport only.
+    svh = size with mobile URL bar visible — does NOT grow on first scroll.
+    Never use dvh for page/shell min-heights (that causes the resize jump).
+  */
+  --shell-min-height: 100svh;
 }
 
 /* ── Reset — SCROLL MUST WORK ──────────────────────────────── */
@@ -50,6 +57,8 @@ html {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-text-size-adjust: 100%;
+  overflow-anchor: none;
+  /* reduces layout jump when chrome toggles */
 }
 
 body {
@@ -61,7 +70,6 @@ body {
   background: #101414;
   overflow-x: hidden;
   overflow-y: auto !important;
-  /* never lock page scroll */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -88,9 +96,10 @@ button {
 
 /* ── Page-image base ───────────────────────────────────────── */
 .page-image {
+  /* svh only — no dvh */
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--shell-min-height);
+  height: auto;
   background-position: center;
   background-size: cover;
   position: relative;
@@ -119,8 +128,8 @@ button {
   place-items: center;
   padding: 80px 32px 120px;
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--shell-min-height);
+  height: auto;
   overflow-x: hidden;
 }
 
@@ -512,11 +521,10 @@ button {
 }
 
 /* ── Dashboard layout ──────────────────────────────────────── */
-/* IMPORTANT: min-height only — do NOT set height + overflow:hidden */
+/* min-height with svh only — content grows with height:auto */
 .dashboard-page {
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--shell-min-height);
   height: auto;
   overflow: visible;
   color: #f8fafc;
@@ -526,8 +534,7 @@ button {
 
 .dashboard-container {
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--shell-min-height);
   height: auto;
   overflow: visible;
   width: 100%;
@@ -550,8 +557,7 @@ button {
 
 .dashboard-overlay {
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--shell-min-height);
   height: auto;
   overflow: visible;
   background: rgba(16, 20, 20, 0.42);
@@ -592,7 +598,8 @@ button {
   left: 0;
   right: 0;
   z-index: 60;
-  max-height: min(50dvh, 320px);
+  /* fixed px cap — avoid dvh so dropdown size doesn't jump with chrome */
+  max-height: 280px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: rgba(20, 24, 24, 0.96);
@@ -743,7 +750,8 @@ button {
 
 .chart-card {
   width: 100%;
-  height: clamp(300px, 40vh, 400px);
+  /* fixed-ish height — avoid vh that changes with mobile chrome */
+  height: 320px;
   min-height: 300px;
   max-height: 400px;
   padding: 4px 0 0;
@@ -1602,7 +1610,7 @@ textarea {
 
 @media (max-width: 767.98px) {
 
-  /* Stop iOS zoom on focus (viewport jump) — still allow page scroll */
+  /* Stop iOS zoom on focus (extra viewport jump) */
   input,
   select,
   textarea,
@@ -1619,9 +1627,19 @@ textarea {
     max-height: none !important;
   }
 
+  /* Shells: stable svh only — never dvh */
+  .page-image,
+  .landing-page,
   .dashboard-page,
   .dashboard-container,
-  .dashboard-overlay,
+  .dashboard-overlay {
+    min-height: 100vh !important;
+    min-height: 100svh !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
   .dashboard-shell,
   .mobile-dashboard,
   .mobile-tab-panel {
@@ -1703,7 +1721,6 @@ textarea {
     align-items: stretch;
     gap: 10px;
     padding: 10px 12px;
-    /* sticky is optional; does NOT lock body scroll */
     position: relative;
     z-index: 40;
   }
@@ -1733,7 +1750,8 @@ textarea {
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    max-height: min(45dvh, 260px);
+    max-height: 240px;
+    /* fixed — no dvh */
     overflow-y: auto;
     z-index: 100;
     -webkit-overflow-scrolling: touch;
@@ -1822,7 +1840,10 @@ textarea {
   }
 
   .chart-card {
-    height: clamp(300px, 35vh, 400px);
+    /* fixed height on mobile — no 35vh (vh changes with chrome) */
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
   }
 
   .stats-strip {
