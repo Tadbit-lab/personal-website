@@ -1,13 +1,8 @@
-/* ===========================
-   STOCK DASHBOARD — Brutalist Lite
-   =========================== */
-
 .stock-dashboard {
   min-height: calc(100vh - 52px);
   padding: var(--gap-lg);
 }
 
-/* ---- Input View ---- */
 
 .stock-input-view {
   display: flex;
@@ -199,7 +194,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---- Future Earnings ---- */
@@ -605,6 +602,7 @@
    ========================================================= */
 
 @media (max-width: 768px) {
+
   /* Switch to tab-based on mobile */
   .dash-layout {
     flex-direction: column;
