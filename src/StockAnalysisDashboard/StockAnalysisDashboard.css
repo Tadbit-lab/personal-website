@@ -1,21 +1,35 @@
-.stock-dashboard {
-  min-height: calc(100vh - 52px);
-  /* fallback */
-  min-height: calc(100svh - 52px);
-  padding: var(--gap-lg);
-}
+/* =========================================================
+   Stock Analysis Dashboard
+   Scroll is owned by the document (html/body) — do not lock it here
+   ========================================================= */
 
+.stock-dashboard {
+  /* grow with content; never pin to viewport height with overflow:hidden */
+  min-height: auto;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  padding: var(--gap-lg);
+  width: 100%;
+  box-sizing: border-box;
+  /* keep a little room under fixed nav if you have one (~52px) */
+  padding-bottom: calc(var(--gap-lg) + 24px);
+}
 
 .stock-input-view {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 120px);
-  /* fallback */
-  min-height: calc(100svh - 120px);
+  /* prefer min content height, not full viewport lock */
+  min-height: min(70vh, 560px);
+  min-height: min(70svh, 560px);
+  min-height: min(70dvh, 560px);
+  height: auto;
+  overflow: visible;
   gap: var(--gap-lg);
   text-align: center;
+  padding: var(--gap-lg) 0;
 }
 
 .stock-input-view h1 {
@@ -32,12 +46,37 @@
   display: flex;
   gap: var(--gap-sm);
   align-items: stretch;
+  position: relative;
+  /* dropdown anchors here */
+  width: 100%;
+  max-width: 420px;
+  justify-content: center;
 }
 
 .stock-input-row input {
   width: 200px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  /* iOS: prevent focus-zoom viewport jump */
+  font-size: 16px;
+}
+
+/* If you render suggestions under the input, overlay them — don't push layout */
+.stock-input-row .suggestions,
+.stock-input-row [role="listbox"],
+.stock-input-row .search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-height: min(50dvh, 280px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(20, 24, 24, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
 /* ---- Result View ---- */
@@ -104,6 +143,10 @@
   padding: var(--gap-md);
   margin-bottom: var(--gap-lg);
   height: 320px;
+  max-height: none;
+  overflow: hidden;
+  /* chart canvas only — OK */
+  position: relative;
 }
 
 /* ---- Content Grid (news / sentiment / word cloud) ---- */
@@ -121,6 +164,7 @@
   border-radius: var(--radius);
   padding: var(--gap-md);
   min-height: 200px;
+  overflow: visible;
 }
 
 .stock-content-card h3 {
@@ -163,6 +207,7 @@
   border-radius: var(--radius);
   padding: var(--gap-md);
   margin-bottom: var(--gap-lg);
+  overflow: visible;
 }
 
 .stock-table-container h3 {
@@ -174,6 +219,7 @@
 }
 
 /* ---- Spinner ---- */
+/* Only covers screen while loading; pointer-events none when hidden via unmount */
 
 .stock-spinner-overlay {
   position: fixed;
@@ -183,6 +229,8 @@
   align-items: center;
   background-color: rgba(17, 17, 17, 0.8);
   z-index: 9999;
+  /* if this node is left mounted empty, it blocks scroll — ensure React unmounts it */
+  pointer-events: auto;
 }
 
 .stock-spinner {
@@ -233,23 +281,32 @@
 
   .stock-input-row {
     flex-direction: column;
+    max-width: 100%;
   }
 
   .stock-input-row input {
     width: 100%;
+    font-size: 16px;
+  }
+
+  .stock-dashboard {
+    padding: var(--gap-md);
   }
 }
 
 /* =========================================================
-   DUAL-VIEW LAYOUT — additive, no existing rules removed
+   DUAL-VIEW LAYOUT
    ========================================================= */
-
-/* ---- Layout shell ---- */
 
 .dash-layout {
   display: flex;
   gap: var(--gap-lg);
   align-items: flex-start;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  /* critical: do not trap wheel/touch here */
 }
 
 /* ---- Sidebar (desktop) ---- */
@@ -265,6 +322,10 @@
   padding: var(--gap-md);
   position: sticky;
   top: var(--gap-md);
+  /* sticky sidebar must NOT use overflow:hidden or fixed height */
+  max-height: none;
+  overflow: visible;
+  align-self: flex-start;
 }
 
 .dash-sidebar-symbol {
@@ -324,6 +385,10 @@
 .dash-main {
   flex: 1;
   min-width: 0;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  /* page scroll, not nested pane */
 }
 
 /* ---- Mobile tab bar (hidden on desktop) ---- */
@@ -349,13 +414,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-md);
+  height: auto;
+  overflow: visible;
 }
-
-/* Chart area override — taller for candlestick */
 
 .graph-chart-container {
   height: 420px;
   position: relative;
+  overflow: hidden;
+  /* canvas clip only */
 }
 
 .chart-loading-overlay {
@@ -367,9 +434,9 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius);
   z-index: 2;
+  pointer-events: none;
+  /* don't block scroll/drag under loader chrome */
 }
-
-/* ---- Timeframe bar ---- */
 
 .timeframe-bar {
   display: flex;
@@ -402,8 +469,6 @@
   color: #93bbff;
 }
 
-/* ---- OHLC stat strip ---- */
-
 .graph-stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -434,8 +499,6 @@
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
-
-/* ---- Inference block ---- */
 
 .inference-block {
   background: rgba(255, 255, 255, 0.03);
@@ -493,6 +556,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-lg);
+  height: auto;
+  overflow: visible;
 }
 
 .info-section {
@@ -511,8 +576,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* ---- KPI rings ---- */
-
 .kpi-ring-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -529,6 +592,8 @@
   border-radius: var(--radius);
   padding: var(--gap-md) var(--gap-sm);
   transition: background 0.2s;
+  overflow: hidden;
+  /* keep ring labels inside card */
 }
 
 .kpi-ring-card:hover {
@@ -538,6 +603,7 @@
 .kpi-ring-svg {
   width: 96px;
   height: 96px;
+  max-width: 100%;
 }
 
 .kpi-ring-label {
@@ -547,8 +613,6 @@
   color: var(--text-muted);
   text-align: center;
 }
-
-/* ---- Valuation table ---- */
 
 .valuation-table {
   background: rgba(255, 255, 255, 0.03);
@@ -582,8 +646,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Financial summary ---- */
-
 .financial-summary-block {
   background: rgba(37, 99, 235, 0.07);
   border: 1px solid rgba(37, 99, 235, 0.2);
@@ -603,15 +665,19 @@
    ========================================================= */
 
 @media (max-width: 768px) {
-
-  /* Switch to tab-based on mobile */
   .dash-layout {
     flex-direction: column;
     gap: var(--gap-sm);
+    overflow: visible;
   }
 
   .dash-sidebar {
     display: none;
+  }
+
+  .dash-main {
+    width: 100%;
+    overflow: visible;
   }
 
   .dash-mobile-tabs {
@@ -624,6 +690,8 @@
     backdrop-filter: blur(12px);
     overflow: hidden;
     margin-bottom: var(--gap-sm);
+    position: relative;
+    z-index: 5;
   }
 
   .dash-tab-btn {
@@ -660,10 +728,19 @@
   .graph-chart-container {
     height: 280px;
   }
+
+  .stock-input-view {
+    min-height: 0;
+    padding: var(--gap-xl) 0;
+  }
 }
 
 @media (max-width: 480px) {
   .kpi-ring-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stock-dashboard {
+    padding: var(--gap-sm);
   }
 }
